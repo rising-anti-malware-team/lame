@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lame.dotnet.scanner", "lame.dotnet.scanner\lame.dotnet.scanner.csproj", "{A11F46FD-C0B1-4D9A-B67F-633C9E0FC968}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lame.dotnet.sample", "lame.dotnet.sample\lame.dotnet.sample.csproj", "{22AED776-B673-4925-99EA-291A695223E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lame.dotnet", "lame.dotnet\lame.dotnet.csproj", "{72D1FEB6-F468-44B0-BFB3-067DBEF3E75F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A11F46FD-C0B1-4D9A-B67F-633C9E0FC968}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A11F46FD-C0B1-4D9A-B67F-633C9E0FC968}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A11F46FD-C0B1-4D9A-B67F-633C9E0FC968}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A11F46FD-C0B1-4D9A-B67F-633C9E0FC968}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22AED776-B673-4925-99EA-291A695223E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22AED776-B673-4925-99EA-291A695223E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22AED776-B673-4925-99EA-291A695223E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22AED776-B673-4925-99EA-291A695223E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72D1FEB6-F468-44B0-BFB3-067DBEF3E75F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72D1FEB6-F468-44B0-BFB3-067DBEF3E75F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72D1FEB6-F468-44B0-BFB3-067DBEF3E75F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72D1FEB6-F468-44B0-BFB3-067DBEF3E75F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

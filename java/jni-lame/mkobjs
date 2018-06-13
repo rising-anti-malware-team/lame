@@ -1,0 +1,5 @@
+JDK = /usr/java/jdk1.7.0_80
+CFLAGS += -I$(JDK)/include -I$(JDK)/include/linux -I../../include
+OBJS = 	jlame.o jlame.v2.o dllmain.o stdafx.o
+SO = $(BINDIR)/libjlame$(SOSUFFIX)
+
