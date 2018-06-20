@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using lame.dotnet;
 
-namespace lame.dotnet.extractor
+namespace lame.dotnetcore.extractor
 {
-
     internal class PackageExtract
     {
         private VirusLib _lib = new VirusLib();
@@ -13,10 +11,12 @@ namespace lame.dotnet.extractor
         private string _dump_path = "";
         private bool _dump = false;
         private Stack<string> _file_names = new Stack<string>();
+
         public PackageExtract(bool dump)
         {
             _dump = dump;
         }
+
         public bool Load()
         {
             try
@@ -33,7 +33,7 @@ namespace lame.dotnet.extractor
                 _lame.OnExtractEnterFileEvent = ExtractEnterFileEventHandle;
                 _lame.OnExtractLeaveFileEvent = ExtractLeaveFileEventHandle;
 
-                _dump_path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin");
+                _dump_path = Path.Combine(Directory.GetCurrentDirectory(), "bin");
                 Directory.CreateDirectory(_dump_path);
 
                 return true;
@@ -45,10 +45,12 @@ namespace lame.dotnet.extractor
 
             return false;
         }
+
         public bool Extract(string file, string passwd)
         {
             return _lame.Extract(file, passwd);
         }
+
         public void Unload()
         {
             if (_lib != null) _lib.lame_close_vdb();
@@ -59,7 +61,8 @@ namespace lame.dotnet.extractor
         {
             if (file == null) return LCT.Continue;
 
-            Console.WriteLine("Name: " + file.FileName + "   Size:" + file.File.GetFileSize() + "    depth:" + file.Depth);
+            Console.WriteLine("Name: " + file.FileName + "   Size:" + file.File.GetFileSize() + "    depth:" +
+                              file.Depth);
 
             if (_dump && file.Depth > 0)
             {
@@ -73,9 +76,11 @@ namespace lame.dotnet.extractor
 
             return LCT.Extract;
         }
+
         private void ExtractLeaveFileEventHandle(LameFile file)
         {
         }
+
         private void DumpFile(string fname, LameFile.ImmediateFile file)
         {
             FileStream fs = null;
@@ -93,7 +98,6 @@ namespace lame.dotnet.extractor
 
                     bw.Write(bytes);
                 }
-
             }
             catch (Exception ex)
             {
@@ -103,17 +107,18 @@ namespace lame.dotnet.extractor
             {
                 if (bw != null)
                 {
-                    bw.Close();
+                    bw.Dispose();
                     bw = null;
                 }
 
                 if (fs != null)
                 {
-                    fs.Close();
+                    fs.Dispose();
                     fs = null;
                 }
             }
         }
+
         private void Makedir(string fname)
         {
             if (string.IsNullOrEmpty(fname)) return;
@@ -128,12 +133,10 @@ namespace lame.dotnet.extractor
     }
 
 
-
     internal class Program
     {
         private static void Main(string[] args)
         {
-
             var files = new List<string>();
             var password = "";
             var dump = false;

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using lame.dotnet;
 
-namespace lame.dotnet.scanner
+namespace lame.dotnetcore.scanner
 {
-
     internal interface IScan
     {
         bool SetParam(string param);
@@ -24,153 +22,12 @@ namespace lame.dotnet.scanner
         private VirusLib vdb = null;
         private Lame lame = new Lame();
 
-        public Scanner(VirusLib vdb) 
+        public Scanner(VirusLib vdb)
         {
             this.vdb = vdb;
         }
-        public Scanner(Lame lame ,VirusLib vdb ) 
-        {
-            if (lame == null || vdb == null)
-            {
-                throw new Exception("Unknown Excepiton");
-            }
-            this.lame = lame;
-            this.vdb = vdb;
-        }
-        public bool SetParam(string param) 
-        {
-            return lame.SetParameters(param);
-        }
-        public bool Load() 
-        {
-            try
-            {
-                if (!vdb.lame_open_vdb(null)) return false;
-                if (!lame.Load(vdb)) return false;
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                vdb.lame_close_vdb();
-                lame.Unload();
-                Console.WriteLine(ex.Message);
-            }
-
-            return false;
-        }
-        public void Scan(string path)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(path)) return;
-                if (File.Exists(path))
-                {
-                    ScanFile(path);
-                    return;
-                }
-
-                var files = Directory.GetFiles(path);
-                foreach (var f in files)
-                {
-                    ScanFile(f);
-                }
-
-                var dirs = Directory.GetDirectories(path);
-                foreach (var d in dirs)
-                {
-                    Scan(d);
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
-        public IScan Clone() 
-        {
-            if (lame == null) return null;
-
-            return new Scanner((Lame)lame.Clone() , vdb);
-        }
-        private void ScanFile(string file)
-        {
-            try
-            {
-                var result = lame.ScanFile(file);
-                lock (locker) 
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write(file);
-                    if (result != null)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.Write("     Infected:" + result.VirusName + " (" + result.EngineID + ")");
-                    }
-                    Console.WriteLine("");
-                }
-               
-            }
-            catch (Exception)
-            {
-
-            }
-        }
-        public void ShowVersion()
-        {
-            try
-            {
-                var info = lame.GetVersion();
-                if (info == null) return;
-
-                Console.WriteLine("Engine:" + info.EngineVersion);
-                Console.WriteLine("VirusDB:" + info.VirusDBVersion);
-            }
-            catch (Exception ex)
-            {
-            	
-            }
-        }
-        public void ShowLicense() 
-        {
-            try
-            {
-                var info = lame.GetLicense();
-                if (info == null) return;
-
-                Console.WriteLine("Version:" + info.Version);
-                Console.WriteLine("Owner:" + info.Owner);
-                Console.WriteLine("Date:" + info.Date);
-                Console.WriteLine("Authm:" + info.Authm);
-            }
-            catch (Exception ex)
-            {
-
-            }
-        }
-        public void UnLoad() 
-        {
-            try
-            {
-                lame.Unload();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
-    }
-
-  
-    internal class ScannerEx : IScan
-    {
-        public static readonly object locker = new object();
-        private VirusLib vdb = null;
-        private LameWithEvent lame = new LameWithEvent();
-        public ScannerEx(VirusLib vdb) 
-        {
-            this.vdb = vdb;
-        }
-         public ScannerEx(LameWithEvent lame, VirusLib vdb) 
+        public Scanner(Lame lame, VirusLib vdb)
         {
             if (lame == null || vdb == null)
             {
@@ -184,23 +41,13 @@ namespace lame.dotnet.scanner
         {
             return lame.SetParameters(param);
         }
+
         public bool Load()
         {
             try
             {
                 if (!vdb.lame_open_vdb(null)) return false;
                 if (!lame.Load(vdb)) return false;
-                lame.EnterFileEvent = EnterFileEventHandle;
-                lame.LeaveFileEvent = LeaveFileEventHandle;
-                lame.AlarmEvent = AlarmEventHandle;
-
-
-                //测试
-                //LameWithEvent lm = (LameWithEvent)lame.Clone();
-                //lame.Unload();
-                //lame = lm;
-
-             
 
                 return true;
             }
@@ -213,12 +60,7 @@ namespace lame.dotnet.scanner
 
             return false;
         }
-        public IScan Clone()
-        {
-            if (lame == null) return null;
 
-            return new ScannerEx((LameWithEvent)lame.Clone(), vdb);
-        }
         public void Scan(string path)
         {
             try
@@ -242,34 +84,18 @@ namespace lame.dotnet.scanner
                     Scan(d);
                 }
             }
-            catch (Exception ex)
-            {
-
-            }
-        }
-        private void ScanFile(string file)
-        {
-            try
-            {
-                lame.ScanFile(file);
-            }
             catch (Exception)
             {
+            }
+        }
 
-            }
-        }
-        private void ScanMem(string file) 
+        public IScan Clone()
         {
-            try
-            {
-                var bytes = File.ReadAllBytes(file);
-                lame.ScanMem(bytes);
-            }
-            catch (Exception ex)
-            {
-            	
-            }
+            if (lame == null) return null;
+
+            return new Scanner((Lame) lame.Clone(), vdb);
         }
+
         public void ShowVersion()
         {
             try
@@ -282,9 +108,9 @@ namespace lame.dotnet.scanner
             }
             catch (Exception)
             {
-
             }
         }
+
         public void ShowLicense()
         {
             try
@@ -299,9 +125,9 @@ namespace lame.dotnet.scanner
             }
             catch (Exception)
             {
-
             }
         }
+
         public void UnLoad()
         {
             try
@@ -313,28 +139,213 @@ namespace lame.dotnet.scanner
                 Console.WriteLine(ex.Message);
             }
         }
-       private LSCT AlarmEventHandle(string file, LameScanResult result)
-       {
-           lock (locker)
-           {
-               Console.ForegroundColor = ConsoleColor.Green;
-               Console.Write(file);
-               if (result != null)
-               {
-                   Console.ForegroundColor = ConsoleColor.Red;
-                   Console.Write("     Infected:" + result.VirusName + " (" + result.EngineID + ")");
-               }
-               Console.WriteLine("");
-           }
-           return LSCT.CONTINUE;
-       }
-       private LSCT EnterFileEventHandle(string fname, uint depth)
-       {
-           return LSCT.CONTINUE;
-       }
-       private void LeaveFileEventHandle(string fname, uint depth)
-       {
-       }
+
+        private void ScanFile(string file)
+        {
+            try
+            {
+                var result = lame.ScanFile(file);
+                lock (locker)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write(file);
+                    if (result != null)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("     Infected:" + result.VirusName + " (" + result.EngineID + ")");
+                    }
+
+                    Console.WriteLine("");
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+    }
+
+
+    internal class ScannerEx : IScan
+    {
+        public static readonly object locker = new object();
+        private VirusLib vdb = null;
+        private LameWithEvent lame = new LameWithEvent();
+
+        public ScannerEx(VirusLib vdb)
+        {
+            this.vdb = vdb;
+        }
+
+        public ScannerEx(LameWithEvent lame, VirusLib vdb)
+        {
+            if (lame == null || vdb == null)
+            {
+                throw new Exception("Unknown Excepiton");
+            }
+            this.lame = lame;
+            this.vdb = vdb;
+        }
+
+        public bool SetParam(string param)
+        {
+            return lame.SetParameters(param);
+        }
+
+        public bool Load()
+        {
+            try
+            {
+                if (!vdb.lame_open_vdb(null)) return false;
+                if (!lame.Load(vdb)) return false;
+                lame.EnterFileEvent = EnterFileEventHandle;
+                lame.LeaveFileEvent = LeaveFileEventHandle;
+                lame.AlarmEvent = AlarmEventHandle;
+
+                //测试
+                //LameWithEvent lm = (LameWithEvent)lame.Clone();
+                //lame.Unload();
+                //lame = lm;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                vdb.lame_close_vdb();
+                lame.Unload();
+                Console.WriteLine(ex.Message);
+            }
+
+            return false;
+        }
+
+        public IScan Clone()
+        {
+            if (lame == null) return null;
+
+            return new ScannerEx((LameWithEvent) lame.Clone(), vdb);
+        }
+
+        public void Scan(string path)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(path)) return;
+                if (File.Exists(path))
+                {
+                    ScanFile(path);
+                    return;
+                }
+
+                var files = Directory.GetFiles(path);
+                foreach (var f in files)
+                {
+                    ScanFile(f);
+                }
+
+                var dirs = Directory.GetDirectories(path);
+                foreach (var d in dirs)
+                {
+                    Scan(d);
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public void ShowVersion()
+        {
+            try
+            {
+                var info = lame.GetVersion();
+                if (info == null) return;
+
+                Console.WriteLine("Engine:" + info.EngineVersion);
+                Console.WriteLine("VirusDB:" + info.VirusDBVersion);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public void ShowLicense()
+        {
+            try
+            {
+                var info = lame.GetLicense();
+                if (info == null) return;
+
+                Console.WriteLine("Version:" + info.Version);
+                Console.WriteLine("Owner:" + info.Owner);
+                Console.WriteLine("Date:" + info.Date);
+                Console.WriteLine("Authm:" + info.Authm);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public void UnLoad()
+        {
+            try
+            {
+                lame.Unload();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void ScanFile(string file)
+        {
+            try
+            {
+                lame.ScanFile(file);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void ScanMem(string file)
+        {
+            try
+            {
+                var bytes = File.ReadAllBytes(file);
+                lame.ScanMem(bytes);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private LSCT AlarmEventHandle(string file, LameScanResult result)
+        {
+            lock (locker)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write(file);
+                if (result != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write("     Infected:" + result.VirusName + " (" + result.EngineID + ")");
+                }
+
+                Console.WriteLine("");
+            }
+
+            return LSCT.CONTINUE;
+        }
+
+        private LSCT EnterFileEventHandle(string fname, uint depth)
+        {
+            return LSCT.CONTINUE;
+        }
+
+        private void LeaveFileEventHandle(string fname, uint depth)
+        {
+        }
     }
 
 
@@ -408,13 +419,14 @@ namespace lame.dotnet.scanner
                 {
                     _Scanner = new ScannerEx(vdb);
                 }
-                else 
+                else
                 {
                     _Scanner = new Scanner(vdb);
                 }
 
 
                 if (bShowVerion) _Scanner.ShowVersion();
+
                 if (bShowLicense) _Scanner.ShowLicense();
 
 
@@ -425,11 +437,11 @@ namespace lame.dotnet.scanner
 
                 if (!_Scanner.Load()) return;
 
-
                 foreach (var s in path_list)
                 {
                     _Scanner.Scan(s);
                 }
+
 
                 if (bHold) Console.Read();
             }
@@ -440,13 +452,10 @@ namespace lame.dotnet.scanner
             finally
             {
                 if (_Scanner != null) _Scanner.UnLoad();
-
                 if (vdb != null) vdb.lame_close_vdb();
-                }
             }
-
-           
         }
+
         private static void Help()
         {
             Console.WriteLine("Usage:\n");
