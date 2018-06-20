@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace lame.dotnet.mt.scanner
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            List<string> _params = new List<string>();
-            List<string> _scan_path = new List<string>();
+            var _params = new List<string>();
+            var _scan_path = new List<string>();
 
-            int _workers = 3;
+            var _workers = 3;
 
-            int idx = 0;
+            var idx = 0;
             while (idx < args.Length)
             {
-                string _param = args[idx++].ToLower().Trim();
+                var _param = args[idx++].ToLower().Trim();
                 if (_param.StartsWith("-workers="))
                 {
                     if (_param.Length <= 9) continue;
                     
-                    string s = _param.Substring(9);
+                    var s = _param.Substring(9);
 
-                    int vl = 0;
+                    var vl = 0;
                     if (int.TryParse(s, out vl) && vl > 0) 
                     {
                         if (vl > 10) _workers = 10;
@@ -48,14 +44,11 @@ namespace lame.dotnet.mt.scanner
 
 
 
-            Scanner _scanner = new Scanner(_params);
-            if (!_scanner.Load(_workers)) 
-            {
-                return;
-            }
+            var _scanner = new Scanner(_params);
+            if (!_scanner.Load(_workers)) return;
 
 
-            foreach (string s in _scan_path)
+            foreach (var s in _scan_path)
             {
                 _scanner.AppendScanPath(s);
             }

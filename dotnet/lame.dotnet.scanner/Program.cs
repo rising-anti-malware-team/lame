@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using lame.dotnet;
 
 namespace lame.dotnet.scanner
 {
 
-    interface IScan
+    internal interface IScan
     {
         bool SetParam(string param);
         bool Load();
@@ -21,7 +18,7 @@ namespace lame.dotnet.scanner
     }
 
 
-    class Scanner : IScan
+    internal class Scanner : IScan
     {
         private static readonly object locker = new object();
         private VirusLib vdb = null;
@@ -53,7 +50,7 @@ namespace lame.dotnet.scanner
 
                 return true;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 vdb.lame_close_vdb();
                 lame.Unload();
@@ -73,23 +70,20 @@ namespace lame.dotnet.scanner
                     return;
                 }
 
-                string[] files = Directory.GetFiles(path);
-                foreach (string f in files)
+                var files = Directory.GetFiles(path);
+                foreach (var f in files)
                 {
                     ScanFile(f);
                 }
 
-                string[] dirs = Directory.GetDirectories(path);
-                foreach (string d in dirs)
+                var dirs = Directory.GetDirectories(path);
+                foreach (var d in dirs)
                 {
                     Scan(d);
                 }
-
-
             }
-            catch (System.Exception ex)
+            catch (Exception)
             {
-
             }
         }
         public IScan Clone() 
@@ -102,7 +96,7 @@ namespace lame.dotnet.scanner
         {
             try
             {
-                LameScanResult result = lame.ScanFile(file);
+                var result = lame.ScanFile(file);
                 lock (locker) 
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -116,7 +110,7 @@ namespace lame.dotnet.scanner
                 }
                
             }
-            catch (System.Exception)
+            catch (Exception)
             {
 
             }
@@ -125,13 +119,13 @@ namespace lame.dotnet.scanner
         {
             try
             {
-                LameVesionInfo info = lame.GetVersion();
+                var info = lame.GetVersion();
                 if (info == null) return;
 
                 Console.WriteLine("Engine:" + info.EngineVersion);
                 Console.WriteLine("VirusDB:" + info.VirusDBVersion);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
             	
             }
@@ -140,7 +134,7 @@ namespace lame.dotnet.scanner
         {
             try
             {
-                LameLicenceInfo info = lame.GetLicense();
+                var info = lame.GetLicense();
                 if (info == null) return;
 
                 Console.WriteLine("Version:" + info.Version);
@@ -148,7 +142,7 @@ namespace lame.dotnet.scanner
                 Console.WriteLine("Date:" + info.Date);
                 Console.WriteLine("Authm:" + info.Authm);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -159,7 +153,7 @@ namespace lame.dotnet.scanner
             {
                 lame.Unload();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -167,7 +161,7 @@ namespace lame.dotnet.scanner
     }
 
   
-    class ScannerEx : IScan
+    internal class ScannerEx : IScan
     {
         public static readonly object locker = new object();
         private VirusLib vdb = null;
@@ -210,7 +204,7 @@ namespace lame.dotnet.scanner
 
                 return true;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 vdb.lame_close_vdb();
                 lame.Unload();
@@ -236,21 +230,19 @@ namespace lame.dotnet.scanner
                     return;
                 }
 
-                string[] files = Directory.GetFiles(path);
-                foreach (string f in files)
+                var files = Directory.GetFiles(path);
+                foreach (var f in files)
                 {
                     ScanFile(f);
                 }
 
-                string[] dirs = Directory.GetDirectories(path);
-                foreach (string d in dirs)
+                var dirs = Directory.GetDirectories(path);
+                foreach (var d in dirs)
                 {
                     Scan(d);
                 }
-
-
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -261,7 +253,7 @@ namespace lame.dotnet.scanner
             {
                 lame.ScanFile(file);
             }
-            catch (System.Exception)
+            catch (Exception)
             {
 
             }
@@ -270,10 +262,10 @@ namespace lame.dotnet.scanner
         {
             try
             {
-                byte[] bytes = File.ReadAllBytes(file);
+                var bytes = File.ReadAllBytes(file);
                 lame.ScanMem(bytes);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
             	
             }
@@ -282,13 +274,13 @@ namespace lame.dotnet.scanner
         {
             try
             {
-                LameVesionInfo info = lame.GetVersion();
+                var info = lame.GetVersion();
                 if (info == null) return;
 
                 Console.WriteLine("Engine:" + info.EngineVersion);
                 Console.WriteLine("VirusDB:" + info.VirusDBVersion);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -297,7 +289,7 @@ namespace lame.dotnet.scanner
         {
             try
             {
-                LameLicenceInfo info = lame.GetLicense();
+                var info = lame.GetLicense();
                 if (info == null) return;
 
                 Console.WriteLine("Version:" + info.Version);
@@ -305,7 +297,7 @@ namespace lame.dotnet.scanner
                 Console.WriteLine("Date:" + info.Date);
                 Console.WriteLine("Authm:" + info.Authm);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -316,14 +308,14 @@ namespace lame.dotnet.scanner
             {
                 lame.Unload();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
         }
        private LSCT AlarmEventHandle(string file, LameScanResult result)
        {
-           lock (ScannerEx.locker)
+           lock (locker)
            {
                Console.ForegroundColor = ConsoleColor.Green;
                Console.Write(file);
@@ -346,18 +338,16 @@ namespace lame.dotnet.scanner
     }
 
 
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            
             if (args.Length == 0)
             {
                 Console.WriteLine("Invalid Param.");
                 Help();
                 return;
             }
-
 
             VirusLib vdb = null;
             IScan _Scanner = null;
@@ -369,18 +359,18 @@ namespace lame.dotnet.scanner
                     Console.WriteLine("Faild to load virus lib.");
                     return;
                 }
-        
-                List<string> path_list = new List<string>();
-                List<string> param_list = new List<string>();
 
-                bool bShowVerion = false;
-                bool bShowLicense = false;
-                bool bShowFileList = false;
-                bool bHold = false;
-                bool bMd5List = false;
-                foreach (string s in args)
+                var path_list = new List<string>();
+                var param_list = new List<string>();
+
+                var bShowVerion = false;
+                var bShowLicense = false;
+                var bShowFileList = false;
+                var bHold = false;
+                var bMd5List = false;
+                foreach (var s in args)
                 {
-                    string vl = s.ToLower();
+                    var vl = s.ToLower();
                     if (s.StartsWith("-"))
                     {
                         if (vl == "-version")
@@ -407,15 +397,12 @@ namespace lame.dotnet.scanner
                         {
                             param_list.Add(s.Substring(1));
                         }
-
                     }
                     else
                     {
                         path_list.Add(s);
                     }
-
                 }
-
 
                 if (bShowFileList)
                 {
@@ -427,18 +414,11 @@ namespace lame.dotnet.scanner
                 }
 
 
-                if (bShowVerion)
-                {
-                    _Scanner.ShowVersion();
-                }
-
-                if (bShowLicense)
-                {
-                    _Scanner.ShowLicense();
-                }
+                if (bShowVerion) _Scanner.ShowVersion();
+                if (bShowLicense) _Scanner.ShowLicense();
 
 
-                foreach (string s in param_list)
+                foreach (var s in param_list)
                 {
                     _Scanner.SetParam(s);
                 }
@@ -446,19 +426,14 @@ namespace lame.dotnet.scanner
                 if (!_Scanner.Load()) return;
 
 
-                foreach (string s in path_list)
+                foreach (var s in path_list)
                 {
                     _Scanner.Scan(s);
                 }
 
-
-           
-                if (bHold)
-                {
-                    Console.Read();
-                }
+                if (bHold) Console.Read();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -477,7 +452,7 @@ namespace lame.dotnet.scanner
 
            
         }
-        static void Help() 
+        private static void Help()
         {
             Console.WriteLine("Usage:\n");
             Console.WriteLine("	  -version	  : show scanner info.");

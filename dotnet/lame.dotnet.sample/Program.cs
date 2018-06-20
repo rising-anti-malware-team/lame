@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using lame.dotnet;
 
 namespace lame.dotnet.sample
 {
-    class Program
+    internal class Program
     {
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             if (args.Length == 0) return;
 
-            VirusLib vdb = new VirusLib();
+            var vdb = new VirusLib();
             if (!vdb.lame_open_vdb(null))
             {
                 Console.WriteLine("Faild to load virus lib.");
@@ -29,7 +26,7 @@ namespace lame.dotnet.sample
 
         }
 
-        static void PrintScanResult(string path, LameScanResult result)
+        private static void PrintScanResult(string path, LameScanResult result)
         {
             if (result == null) return;
 
@@ -41,27 +38,27 @@ namespace lame.dotnet.sample
             Console.WriteLine("");
         }
 
-        static void LameTest(VirusLib vdb, string path)
+        private static void LameTest(VirusLib vdb, string path)
         {
             if (vdb == null) return;
 
 
             // 1. load
-            Lame _lame = new Lame();
+            var _lame = new Lame();
             if (!_lame.Load(vdb)) return;
 
             //2. scan
             if (File.Exists(path))
             {
-                LameScanResult _result = _lame.ScanFile(path);
+                var _result = _lame.ScanFile(path);
                 PrintScanResult(path, _result);
             }
             else if (Directory.Exists(path))
             {
-                string[] files = Directory.GetFiles(path);
-                foreach (string f in files)
+                var files = Directory.GetFiles(path);
+                foreach (var f in files)
                 {
-                    LameScanResult _result = _lame.ScanFile(f);
+                    var _result = _lame.ScanFile(f);
                     PrintScanResult(f, _result);
                 }
 
@@ -76,7 +73,7 @@ namespace lame.dotnet.sample
 
         }
 
-        static private LSCT AlarmEventHandle(string file, LameScanResult result)
+        private static LSCT AlarmEventHandle(string file, LameScanResult result)
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(file);
@@ -89,22 +86,22 @@ namespace lame.dotnet.sample
             return LSCT.CONTINUE;
         }
 
-        static private LSCT EnterFileEventHandle(string fname, uint depth)
+        private static LSCT EnterFileEventHandle(string fname, uint depth)
         {
             return LSCT.CONTINUE;
         }
 
-        static private void LeaveFileEventHandle(string fname, uint depth)
+        private static void LeaveFileEventHandle(string fname, uint depth)
         {
         }
 
-        static void LameWithEventTest(VirusLib vdb, string path)
+        private static void LameWithEventTest(VirusLib vdb, string path)
         {
             if (vdb == null) return;
 
 
             // 1. load
-            LameWithEvent _lame = new LameWithEvent();
+            var _lame = new LameWithEvent();
             _lame.EnterFileEvent = EnterFileEventHandle;
             _lame.LeaveFileEvent = LeaveFileEventHandle;
             _lame.AlarmEvent = AlarmEventHandle;
@@ -120,8 +117,8 @@ namespace lame.dotnet.sample
             }
             else if (Directory.Exists(path))
             {
-                string[] files = Directory.GetFiles(path);
-                foreach (string f in files)
+                var files = Directory.GetFiles(path);
+                foreach (var f in files)
                 {
                     _lame.ScanFile(f);
                 }

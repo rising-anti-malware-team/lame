@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace lame.dotnet
 {
@@ -12,8 +9,8 @@ namespace lame.dotnet
     {
         TreatFailFix = -1,
         TreatOkDeleted = 1,
-        TreatOkFixed = 2,
-    };
+        TreatOkFixed = 2
+    }
 
 
     public enum VirusType
@@ -66,8 +63,8 @@ namespace lame.dotnet
         Rogue,					//	流氓行为
 
         Attention = 0xFE,		// 注意!
-        TypeMax = 0x100,
-    };
+        TypeMax = 0x100
+    }
 
 
 
@@ -75,98 +72,100 @@ namespace lame.dotnet
     public struct ScanResult_
     {
         public VirusType vtype;
-        [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 16)]
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
         public string kclass;
-        [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 16)]
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
         public string kclass_desc_a;
-        [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 32)]
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public string kclass_desc_w_notused;
-        [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 32)]
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public string engid;
-        [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 256)]
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
         public string vname;
         public int vid32;
         public long vid40;
-        [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 32)]
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public string hitag;
         public TreatResult treat;
-    };
+    }
 
-     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-     public struct LameLicenceInfo_
-     {
-        [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 16)]
-	    public string			Version;
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct LameLicenceInfo_
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
+        public string Version;
 
-        [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 128)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         public string Owner;
 
-        [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 64)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
         public string Date;
-         [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 32)]
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public string Authm;
-        [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 2048)]
-         public  string Data;
-    };
 
-      [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-     public struct LameVesionInfo_ 
-     {
-         [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 33)]
-         public string EngineVersion;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 2048)]
+        public string Data;
+    }
 
-         [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 33)]
-         public string VirusDBVersion;
-     }
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct LameVesionInfo_
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
+        public string EngineVersion;
 
-      [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-      public struct LameScanFeedBack
-      {
-          public delegate int InnerLameScanEnterFile(string fname, uint depth, IntPtr uuserdata);
-          public delegate void InnerLameScanLeaveFile(string fname, uint depth, IntPtr uuserdata , int l);
-          public delegate int InnerLameScanAlarm(string fname, IntPtr result, IntPtr uuserdata);
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 33)]
+        public string VirusDBVersion;
+    }
 
-          [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.FunctionPtr)]
-          public InnerLameScanEnterFile EnterFile;
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct LameScanFeedBack
+    {
+        public delegate int InnerLameScanEnterFile(string fname, uint depth, IntPtr uuserdata);
+        public delegate void InnerLameScanLeaveFile(string fname, uint depth, IntPtr uuserdata, int l);
+        public delegate int InnerLameScanAlarm(string fname, IntPtr result, IntPtr uuserdata);
 
-          [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.FunctionPtr)]
-          public InnerLameScanLeaveFile LeaveFile;
+        [MarshalAs(UnmanagedType.FunctionPtr)] public InnerLameScanEnterFile EnterFile;
 
-          [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.FunctionPtr)]
-          public InnerLameScanAlarm alarm;
-      }
+        [MarshalAs(UnmanagedType.FunctionPtr)] public InnerLameScanLeaveFile LeaveFile;
 
-      
-
-     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-     public struct LameExtractFeedBack 
-     {
-         public delegate int InnerExtractEnterFileEvent(string fname, string fmt, uint depth, ulong flag, IntPtr fhandle, IntPtr userdata);
-         public delegate void InnerExtractLeaveFileEvent(string fname, string fmt, uint depth, ulong flag, IntPtr fhandle, IntPtr userdata, uint l);
-         [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.FunctionPtr)]
-         public InnerExtractEnterFileEvent EnterFile;
-
-         [System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.FunctionPtr)]
-         public InnerExtractLeaveFileEvent LeaveFile;
-     }
+        [MarshalAs(UnmanagedType.FunctionPtr)] public InnerLameScanAlarm alarm;
+    }
 
 
-     public class LameLicenceInfo
-     {
-         public string Version { set; get; }
-         public string Owner { set; get; }
-         public string Date { set; get; }
-         public string Authm { set; get; }
-         public string Data { set; get; }
-     };
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct LameExtractFeedBack
+    {
+        public delegate int InnerExtractEnterFileEvent(string fname, string fmt, uint depth, ulong flag, IntPtr fhandle, IntPtr userdata);
+        public delegate void InnerExtractLeaveFileEvent(string fname, string fmt, uint depth, ulong flag, IntPtr fhandle, IntPtr userdata, uint l);
+        [MarshalAs(UnmanagedType.FunctionPtr)] public InnerExtractEnterFileEvent EnterFile;
+        [MarshalAs(UnmanagedType.FunctionPtr)] public InnerExtractLeaveFileEvent LeaveFile;
+    }
 
 
-     public class LameVesionInfo
-     {
-         public string EngineVersion { set; get; }
-         public string VirusDBVersion { set; get; }
+    public class LameLicenceInfo
+    {
+        public string Version { set; get; }
+        public string Owner { set; get; }
+        public string Date { set; get; }
+        public string Authm { set; get; }
+        public string Data { set; get; }
+    }
 
-     }
+
+    public class LameVesionInfo
+    {
+        public string EngineVersion { set; get; }
+        public string VirusDBVersion { set; get; }
+
+    }
 
 
     public class LameScanResult
@@ -185,60 +184,60 @@ namespace lame.dotnet
 
 
 
-    
-    class LameUtity 
+
+    internal class LameUtity
     {
         //public delegate void ScanInternalFileEvent_(string fname, IntPtr result, IntPtr zero);
         //public delegate int InnerExtractFileEvent(string fname, string fmt, uint depth, int flag, IntPtr fhandle, IntPtr userdata);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_create", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern System.IntPtr lame_create_(System.IntPtr vdb);
+        [DllImport("lame.dll", EntryPoint = "lame_create", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern IntPtr lame_create_(IntPtr vdb);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_param_set", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern int lame_param_set_(System.IntPtr pEngine, string pFileName);
+        [DllImport("lame.dll", EntryPoint = "lame_param_set", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int lame_param_set_(IntPtr pEngine, string pFileName);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_init", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern int lame_init_(System.IntPtr pEngine);
+        [DllImport("lame.dll", EntryPoint = "lame_init", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int lame_init_(IntPtr pEngine);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_scan_file", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern int lame_scan_file_(System.IntPtr pEngine, string pFileName, ref ScanResult_ result);
+        [DllImport("lame.dll", EntryPoint = "lame_scan_file", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int lame_scan_file_(IntPtr pEngine, string pFileName, ref ScanResult_ result);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_scan_file_with_callback", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern int lame_scan_file_with_callback_(System.IntPtr pEngine, string pFileName, ref LameScanFeedBack cb, System.IntPtr user_data);
+        [DllImport("lame.dll", EntryPoint = "lame_scan_file_with_callback", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int lame_scan_file_with_callback_(IntPtr pEngine, string pFileName, ref LameScanFeedBack cb, IntPtr user_data);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_scan_mem", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern int lame_scan_mem_(System.IntPtr pEngine, byte[] data, uint uSize, ref ScanResult_ result);
+        [DllImport("lame.dll", EntryPoint = "lame_scan_mem", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int lame_scan_mem_(IntPtr pEngine, byte[] data, uint uSize, ref ScanResult_ result);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_scan_mem_with_callback", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern int lame_scan_mem_with_callback_(System.IntPtr pEngine, byte[] data, uint uSize, ref LameScanFeedBack cb, System.IntPtr user_data);
+        [DllImport("lame.dll", EntryPoint = "lame_scan_mem_with_callback", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int lame_scan_mem_with_callback_(IntPtr pEngine, byte[] data, uint uSize, ref LameScanFeedBack cb, IntPtr user_data);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_destroy", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern void lame_destroy_(System.IntPtr pEngine);
+        [DllImport("lame.dll", EntryPoint = "lame_destroy", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern void lame_destroy_(IntPtr pEngine);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_get_licence_info", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport("lame.dll", EntryPoint = "lame_get_licence_info", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern int lame_get_licence_info_(ref LameLicenceInfo_ license);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_get_version", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport("lame.dll", EntryPoint = "lame_get_version", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern int lame_get_version_(ref LameVesionInfo_ ver);
 
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_extract_file", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern int lame_extract_file_(System.IntPtr pEngine, string fname, string password, ref LameExtractFeedBack  cb, System.IntPtr user_data);
+        [DllImport("lame.dll", EntryPoint = "lame_extract_file", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int lame_extract_file_(IntPtr pEngine, string fname, string password, ref LameExtractFeedBack cb, IntPtr user_data);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_file_get_size", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern int lame_file_get_size_(System.IntPtr pEngine);
+        [DllImport("lame.dll", EntryPoint = "lame_file_get_size", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int lame_file_get_size_(IntPtr pEngine);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_file_seek", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern int lame_file_seek_(System.IntPtr pEngine , int offset , int method);
+        [DllImport("lame.dll", EntryPoint = "lame_file_seek", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int lame_file_seek_(IntPtr pEngine, int offset, int method);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_file_tell", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern int lame_file_tell_(System.IntPtr pEngine);
+        [DllImport("lame.dll", EntryPoint = "lame_file_tell", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int lame_file_tell_(IntPtr pEngine);
 
-        [System.Runtime.InteropServices.DllImportAttribute("lame.dll", EntryPoint = "lame_file_read", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern int lame_file_read_(System.IntPtr pEngine, byte[] data, uint uSize);
+        [DllImport("lame.dll", EntryPoint = "lame_file_read", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int lame_file_read_(IntPtr pEngine, byte[] data, uint uSize);
     }
 
-    public class LameBase 
+    public class LameBase
     {
 
         protected List<string> params_lst = new List<string>();
@@ -258,7 +257,7 @@ namespace lame.dotnet
                 pEngine = LameUtity.lame_create_(lib.vdb_handle);
                 if (pEngine == IntPtr.Zero) throw new Exception("Faild to create lame.");
 
-                foreach (string s in params_lst)
+                foreach (var s in params_lst)
                 {
                     LameUtity.lame_param_set_(pEngine, s);
                 }
@@ -306,11 +305,11 @@ namespace lame.dotnet
 
             try
             {
-                LameLicenceInfo_ lame_info_ = new LameLicenceInfo_();
+                var lame_info_ = new LameLicenceInfo_();
 
                 if (LameUtity.lame_get_licence_info_(ref lame_info_) < 0) return null;
 
-                LameLicenceInfo lame_info = new LameLicenceInfo();
+                var lame_info = new LameLicenceInfo();
                 lame_info.Authm = lame_info_.Authm;
                 lame_info.Data = lame_info_.Data;
                 lame_info.Date = lame_info_.Date;
@@ -319,7 +318,7 @@ namespace lame.dotnet
 
                 return lame_info;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //throw e;
             }
@@ -331,15 +330,15 @@ namespace lame.dotnet
         {
             try
             {
-                LameVesionInfo_ ver_ = new LameVesionInfo_();
+                var ver_ = new LameVesionInfo_();
                 if (LameUtity.lame_get_version_(ref ver_) < 0) return null;
 
-                LameVesionInfo ver = new LameVesionInfo();
+                var ver = new LameVesionInfo();
                 ver.EngineVersion = ver_.EngineVersion;
                 ver.VirusDBVersion = ver_.VirusDBVersion;
                 return ver;
             }
-            catch (System.Exception)
+            catch (Exception)
             {
 
             }
@@ -358,10 +357,10 @@ namespace lame.dotnet
                 if (pEngine == IntPtr.Zero) throw new Exception("Invalid lame");
 
 
-                ScanResult_ _result = new ScanResult_();
+                var _result = new ScanResult_();
                 if (LameUtity.lame_scan_file_(pEngine, sFile, ref _result) < 0) return null;
 
-                LameScanResult result = new LameScanResult();
+                var result = new LameScanResult();
                 result.EngineID = _result.engid;
                 result.VirusName = _result.vname;
                 result.VirusTypeName = _result.kclass;
@@ -384,14 +383,14 @@ namespace lame.dotnet
         {
             try
             {
-                if (bytes == null || bytes.Length == 0 ) throw new Exception("Invalid param");
+                if (bytes == null || bytes.Length == 0) throw new Exception("Invalid param");
 
                 if (pEngine == IntPtr.Zero) throw new Exception("Invalid lame");
 
-                ScanResult_ _result = new ScanResult_();
+                var _result = new ScanResult_();
                 if (LameUtity.lame_scan_mem_(pEngine, bytes, (uint)bytes.Length, ref _result) < 0) return null;
 
-                LameScanResult result = new LameScanResult();
+                var result = new LameScanResult();
 
                 result.EngineID = _result.engid;
                 result.VirusName = _result.vname;
@@ -415,7 +414,7 @@ namespace lame.dotnet
             try
             {
                 _lame = new Lame();
-                foreach (string s in params_lst)
+                foreach (var s in params_lst)
                 {
                     _lame.SetParameters(s);
                 }
@@ -428,7 +427,7 @@ namespace lame.dotnet
 
                 return _lame;
             }
-            catch (System.Exception)
+            catch (Exception)
             {
 
             }
@@ -452,15 +451,15 @@ namespace lame.dotnet
         public LameScannerLeaveFileEvent LeaveFileEvent;
         public LameScannerAlarm AlarmEvent;
         private LameScanFeedBack cbs = new LameScanFeedBack();
-        public LameWithEvent() 
+        public LameWithEvent()
         {
             cbs.EnterFile = LameScanEnterFile;
             cbs.LeaveFile = LameScanLeaveFile;
             cbs.alarm = LameScanAlarm;
 
-            EnterFileEvent = delegate(string fname, uint depth) { return LSCT.CONTINUE; };
-            LeaveFileEvent = delegate(string fname, uint depth) {  };
-            AlarmEvent = delegate(string fname, LameScanResult result) { return LSCT.CONTINUE; };
+            EnterFileEvent = delegate { return LSCT.CONTINUE; };
+            LeaveFileEvent = delegate { };
+            AlarmEvent = delegate { return LSCT.CONTINUE; };
         }
 
         public void ScanFile(string sFile)
@@ -485,7 +484,7 @@ namespace lame.dotnet
                 if (bytes == null || bytes.Length == 0) throw new Exception("Invalid param");
                 if (pEngine == IntPtr.Zero) throw new Exception("Invalid lame");
 
-                if (LameUtity.lame_scan_mem_with_callback_(pEngine, bytes , (uint)bytes.Length, ref cbs , IntPtr.Zero) < 0) return;
+                if (LameUtity.lame_scan_mem_with_callback_(pEngine, bytes, (uint)bytes.Length, ref cbs, IntPtr.Zero) < 0) return;
 
             }
             catch (Exception e)
@@ -494,14 +493,14 @@ namespace lame.dotnet
             }
         }
 
-     
+
         public object Clone()
         {
             LameWithEvent _lame = null;
             try
             {
                 _lame = new LameWithEvent();
-                foreach (string s in params_lst)
+                foreach (var s in params_lst)
                 {
                     _lame.SetParameters(s);
                 }
@@ -518,21 +517,21 @@ namespace lame.dotnet
 
                 return _lame;
             }
-            catch (System.Exception)
+            catch (Exception)
             {
 
             }
 
             return null;
         }
-        private LameScanResult FetchResult(IntPtr resp) 
+        private LameScanResult FetchResult(IntPtr resp)
         {
             try
             {
-                ScanResult_ _result = (ScanResult_)Marshal.PtrToStructure(resp, typeof(ScanResult_));
+                var _result = (ScanResult_) Marshal.PtrToStructure(resp, typeof(ScanResult_));
 
 
-                LameScanResult result = new LameScanResult();
+                var result = new LameScanResult();
                 result.EngineID = _result.engid;
                 result.VirusName = _result.vname;
                 result.VirusTypeName = _result.kclass;
@@ -545,9 +544,9 @@ namespace lame.dotnet
 
                 return result;
             }
-            catch (System.Exception)
+            catch (Exception)
             {
-            	
+
             }
 
             return null;
@@ -555,13 +554,13 @@ namespace lame.dotnet
 
         private int LameScanEnterFile(string fname, uint depth, IntPtr uuserdata)
         {
-            return (int)EnterFileEvent(fname , depth);
+            return (int)EnterFileEvent(fname, depth);
         }
         private void LameScanLeaveFile(string fname, uint depth, IntPtr uuserdata, int l)
         {
             LeaveFileEvent(fname, depth);
         }
-        private int LameScanAlarm(string fname, IntPtr resp, IntPtr uuserdata) 
+        private int LameScanAlarm(string fname, IntPtr resp, IntPtr uuserdata)
         {
             LameScanResult result = null;
 
@@ -585,14 +584,14 @@ namespace lame.dotnet
         DiskImg
     }
 
-    public enum LCT 
+    public enum LCT
     {
         Continue = 1,
         Extract = 2,
         Abort = 3
     }
 
-  
+
     public class LameFile
     {
         public class ImmediateFile
@@ -601,7 +600,7 @@ namespace lame.dotnet
             {
                 Begin = 0x00,
                 Current = 0x01,
-                End = 0x02,
+                End = 0x02
             }
             private IntPtr _handle = IntPtr.Zero;
             public ImmediateFile(IntPtr handle)
@@ -616,7 +615,7 @@ namespace lame.dotnet
                 {
                     return LameUtity.lame_file_get_size_(_handle);
                 }
-                catch (System.Exception)
+                catch (Exception)
                 {
 
                 }
@@ -630,7 +629,7 @@ namespace lame.dotnet
                 {
                     return LameUtity.lame_file_read_(_handle, bytes, (uint)bytes.Length);
                 }
-                catch (System.Exception)
+                catch (Exception)
                 {
 
                 }
@@ -644,7 +643,7 @@ namespace lame.dotnet
                 {
                     return LameUtity.lame_file_tell_(_handle);
                 }
-                catch (System.Exception)
+                catch (Exception)
                 {
 
                 }
@@ -657,7 +656,7 @@ namespace lame.dotnet
                 {
                     return LameUtity.lame_file_seek_(_handle, offset, (int)orginal);
                 }
-                catch (System.Exception)
+                catch (Exception)
                 {
 
                 }
@@ -673,12 +672,12 @@ namespace lame.dotnet
         private FileAttritue _flag;
         private ImmediateFile _file;
         private uint _depth = 0;
-        public LameFile(string fname, string fmt ,uint depth, FileAttritue flag, IntPtr fhandle) 
+        public LameFile(string fname, string fmt, uint depth, FileAttritue flag, IntPtr fhandle)
         {
             try
             {
                 _full_name = fname;
-                
+
                 _fname = Path.GetFileName(_full_name);
                 _inner_path = _full_name.Substring(0, _full_name.Length - _fname.Length);
 
@@ -687,16 +686,16 @@ namespace lame.dotnet
                 _depth = depth;
                 _file = new ImmediateFile(fhandle);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                throw ex;	
+                throw ex;
             }
-        
+
         }
 
         public string FileName
         {
-            get 
+            get
             {
                 return _fname;
             }
@@ -704,7 +703,7 @@ namespace lame.dotnet
 
         public string FullFileName
         {
-            get 
+            get
             {
                 return _full_name;
             }
@@ -720,7 +719,7 @@ namespace lame.dotnet
 
         public string FileFormat
         {
-            get 
+            get
             {
                 return _fmt;
             }
@@ -728,7 +727,7 @@ namespace lame.dotnet
 
         public FileAttritue FileAttritue
         {
-            get 
+            get
             {
                 return _flag;
             }
@@ -736,14 +735,14 @@ namespace lame.dotnet
 
         public ImmediateFile File
         {
-            get 
+            get
             {
                 return _file;
             }
         }
         public uint Depth
         {
-            get 
+            get
             {
                 return _depth;
             }
@@ -754,65 +753,66 @@ namespace lame.dotnet
 
     public class LameExtractor : LameBase
     {
+        private LameExtractFeedBack fd;
         public ExtractEnterFileEvent OnExtractEnterFileEvent;
         public ExtractLeaveFileEvent OnExtractLeaveFileEvent;
-        LameExtractFeedBack fd = new LameExtractFeedBack();
-        public LameExtractor() 
+
+        public LameExtractor()
         {
-            fd.EnterFile = new LameExtractFeedBack.InnerExtractEnterFileEvent(ExtractEnterFileHandle);
-            fd.LeaveFile = new LameExtractFeedBack.InnerExtractLeaveFileEvent(ExtractLeaveFileHandle);
-            OnExtractEnterFileEvent = new ExtractEnterFileEvent(delegate(LameFile file) { return LCT.Continue; });
-            OnExtractLeaveFileEvent = new ExtractLeaveFileEvent(delegate(LameFile file) { });
+            fd.EnterFile = ExtractEnterFileHandle;
+            fd.LeaveFile = ExtractLeaveFileHandle;
+            OnExtractEnterFileEvent = delegate { return LCT.Continue; };
+            OnExtractLeaveFileEvent = delegate { };
         }
-        public bool Extract(string fname , string password) 
+        public bool Extract(string fname, string password)
         {
             if (pEngine == IntPtr.Zero) throw new Exception("Invalid lame");
             if (string.IsNullOrEmpty(fname)) return false;
- 
-            LameUtity.lame_extract_file_(pEngine, fname, password, ref fd , IntPtr.Zero);
+
+            LameUtity.lame_extract_file_(pEngine, fname, password, ref fd, IntPtr.Zero);
 
             return true;
         }
-        private int ExtractEnterFileHandle(string fname, string fmt, uint depth , ulong flag, IntPtr handle,IntPtr userdata) 
+        private int ExtractEnterFileHandle(string fname, string fmt, uint depth, ulong flag, IntPtr handle, IntPtr userdata)
         {
             try
             {
-                LameFile _file = new LameFile(fname, fmt, depth ,GetPackFlage(flag), handle);
+                var _file = new LameFile(fname, fmt, depth, GetPackFlage(flag), handle);
                 if (_file == null) return (int)LCT.Continue;
                 return (int)OnExtractEnterFileEvent(_file);
             }
-            catch (System.Exception)
+            catch (Exception)
             {
-            	
+
             }
 
             return (int)LCT.Continue;
         }
 
-        private void ExtractLeaveFileHandle(string fname, string fmt, uint depth, ulong flag, IntPtr handle, IntPtr userdata , uint lv)
+        private void ExtractLeaveFileHandle(string fname, string fmt, uint depth, ulong flag, IntPtr handle, IntPtr userdata, uint lv)
         {
             try
             {
-                LameFile _file = new LameFile(fname, fmt, depth, GetPackFlage(flag), handle);
-                if (_file == null) return ;
-                 OnExtractLeaveFileEvent(_file);
+                var _file = new LameFile(fname, fmt, depth, GetPackFlage(flag), handle);
+                if (_file == null) return;
+                OnExtractLeaveFileEvent(_file);
             }
-            catch (System.Exception)
+            catch (Exception)
             {
 
             }
 
         }
-        private FileAttritue GetPackFlage(ulong flag) 
+        private FileAttritue GetPackFlage(ulong flag)
         {
             if ((flag & 0x00000010) > 0) return FileAttritue.Program;
-            else if ((flag & 0x00000020) > 0) return FileAttritue.Document;
-            else if ((flag & 0x00000040) > 0) return FileAttritue.Package;
-            else if ((flag & 0x00000080) > 0) return FileAttritue.MMedia;
-            else if ((flag & 0x00000100) > 0) return FileAttritue.Script;
-            else if ((flag & 0x00000200) > 0) return FileAttritue.Email;
-            else if ((flag & 0x00000400) > 0) return FileAttritue.DiskImg;
-            else return FileAttritue.Data;
+            if ((flag & 0x00000020) > 0) return FileAttritue.Document;
+            if ((flag & 0x00000040) > 0) return FileAttritue.Package;
+            if ((flag & 0x00000080) > 0) return FileAttritue.MMedia;
+            if ((flag & 0x00000100) > 0) return FileAttritue.Script;
+            if ((flag & 0x00000200) > 0) return FileAttritue.Email;
+            if ((flag & 0x00000400) > 0) return FileAttritue.DiskImg;
+            return FileAttritue.Data;
         }
     }
 }

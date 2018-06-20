@@ -1,42 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Diagnostics;
+using System.IO;
+using System.Threading;
+using lame.dotnet;
 
 namespace lame.dotnet.mt.scanner
 {
-    class MtdUtility 
+    internal class MtdUtility
     {
-       private static Object _locker = new Object();
+        private static readonly object _locker = new object();
 
-       public static void ShowScanResult(string path, LameScanResult result)
-       {
-           lock (_locker) 
-           {
-               Console.ForegroundColor = ConsoleColor.Green;
-               Console.Write(path);
-               if (result != null)
-               {
-                   Console.ForegroundColor = ConsoleColor.Red;
-                   Console.Write("     Infected:" + result.VirusName + " (" + result.EngineID + ")");
-               }
-               Console.WriteLine("");
-           }
-       } 
+        public static void ShowScanResult(string path, LameScanResult result)
+        {
+            lock (_locker)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write(path);
+                if (result != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write("     Infected:" + result.VirusName + " (" + result.EngineID + ")");
+                }
+                Console.WriteLine("");
+            }
+        }
 
     }
 
-    class SFQueue 
+    internal class SFQueue
     {
-        private Object _locker = new Object();
+        private readonly object _locker = new object();
+        private readonly uint _max_queue_size = 100;
         private Queue<string> _queue = new Queue<string>();
-        private uint _max_queue_size = 100;
 
-        public bool Enqueue(string s, bool force = true) 
+        public bool Enqueue(string s, bool force = true)
         {
             if (force)
             {
@@ -44,18 +42,18 @@ namespace lame.dotnet.mt.scanner
                 {
                     lock (_locker)
                     {
-                        if (_queue.Count < _max_queue_size) 
+                        if (_queue.Count < _max_queue_size)
                         {
                             _queue.Enqueue(s);
                             return true;
                         }
                     }
 
-                    Thread.Sleep(10);  
+                    Thread.Sleep(10);
                 }
 
             }
-            else 
+            else
             {
                 lock (_locker)
                 {
@@ -65,7 +63,7 @@ namespace lame.dotnet.mt.scanner
                 }
             }
         }
-        public string Dequeue() 
+        public string Dequeue()
         {
             lock (_locker)
             {
@@ -75,7 +73,7 @@ namespace lame.dotnet.mt.scanner
         }
         public int Count()
         {
-            lock (_locker) 
+            lock (_locker)
             {
                 return _queue.Count;
             }
@@ -83,14 +81,14 @@ namespace lame.dotnet.mt.scanner
     }
 
 
-    class DirTravelWorker 
+    internal class DirTravelWorker
     {
         private SFQueue _scan_obj_queue = null;
         private SFQueue _scan_path = new SFQueue();
         private Thread _travel_worker = null;
         private ManualResetEvent _manual_event = new ManualResetEvent(false);
 
-        public DirTravelWorker(SFQueue q) 
+        public DirTravelWorker(SFQueue q)
         {
             _scan_obj_queue = q;
             _travel_worker = new Thread(_run);
@@ -103,13 +101,13 @@ namespace lame.dotnet.mt.scanner
             _manual_event.Set();
         }
 
-        public void AppendScanPath(string path) 
+        public void AppendScanPath(string path)
         {
             if (string.IsNullOrEmpty(path)) return;
             _scan_path.Enqueue(path);
         }
 
-        public void Wait() 
+        public void Wait()
         {
             _manual_event.WaitOne();
         }
@@ -119,9 +117,9 @@ namespace lame.dotnet.mt.scanner
             _manual_event.WaitOne();
             _manual_event.Reset();
 
-            while (true) 
+            while (true)
             {
-                string path = _scan_path.Dequeue();
+                var path = _scan_path.Dequeue();
                 if (string.IsNullOrEmpty(path))
                 {
                     _scan_obj_queue.Enqueue("exit");
@@ -134,11 +132,11 @@ namespace lame.dotnet.mt.scanner
             _manual_event.Set();
         }
 
-        private void travel(string s) 
+        private void travel(string s)
         {
             if (string.IsNullOrEmpty(s)) return;
 
-            if (File.Exists(s)) 
+            if (File.Exists(s))
             {
                 _scan_obj_queue.Enqueue(s);
                 return;
@@ -146,14 +144,14 @@ namespace lame.dotnet.mt.scanner
 
             if (!Directory.Exists(s)) return;
 
-            string[] files = Directory.GetFiles(s);
-            foreach (string f in files)
+            var files = Directory.GetFiles(s);
+            foreach (var f in files)
             {
                 _scan_obj_queue.Enqueue(f);
             }
 
-            string[] dirs = Directory.GetDirectories(s);
-            foreach (string d in dirs)
+            var dirs = Directory.GetDirectories(s);
+            foreach (var d in dirs)
             {
                 travel(d);
             }
@@ -172,7 +170,7 @@ namespace lame.dotnet.mt.scanner
         private long _virus_file_count = 0;
         private long _elapse_time = 0;
 
-        public ScanWorker(List<string> param , SFQueue scan_path) 
+        public ScanWorker(List<string> param, SFQueue scan_path)
         {
             _scan_objs = scan_path;
             _thread = new Thread(scan);
@@ -180,7 +178,7 @@ namespace lame.dotnet.mt.scanner
 
             if (param == null) return;
 
-            foreach (string s in param)
+            foreach (var s in param)
             {
                 _lame.SetParameters(s);
             }
@@ -189,27 +187,27 @@ namespace lame.dotnet.mt.scanner
 
         public bool Load(VirusLib vdb)
         {
-          
-            if (vdb == null || !_lame.Load(vdb)) 
+
+            if (vdb == null || !_lame.Load(vdb))
             {
                 return false;
             }
-            
+
             return true;
         }
 
-        public void Run() 
+        public void Run()
         {
             _mannul_event.Set();
         }
 
 
-        public void Wait() 
+        public void Wait()
         {
             _mannul_event.WaitOne();
         }
 
-        public void Unload() 
+        public void Unload()
         {
             if (_lame == null) return;
             _lame.Unload();
@@ -221,12 +219,12 @@ namespace lame.dotnet.mt.scanner
             _mannul_event.WaitOne();
             _mannul_event.Reset();
 
-            Stopwatch _Stopwatch = new Stopwatch();
+            var _Stopwatch = new Stopwatch();
             _Stopwatch.Start();
 
-            while (true) 
+            while (true)
             {
-                string file_path = _scan_objs.Dequeue();
+                var file_path = _scan_objs.Dequeue();
                 if (string.IsNullOrEmpty(file_path))
                 {
                     Thread.Sleep(10);
@@ -241,10 +239,10 @@ namespace lame.dotnet.mt.scanner
 
                 _scan_file_count++;
 
-                LameScanResult res = _lame.ScanFile(file_path);
+                var res = _lame.ScanFile(file_path);
                 if (res != null) _virus_file_count++;
-                
-                MtdUtility.ShowScanResult(file_path , res);
+
+                MtdUtility.ShowScanResult(file_path, res);
             }
 
             _Stopwatch.Stop();
@@ -255,7 +253,7 @@ namespace lame.dotnet.mt.scanner
 
         public long ScanFileCount
         {
-            get 
+            get
             {
                 return _scan_file_count;
             }
@@ -263,7 +261,7 @@ namespace lame.dotnet.mt.scanner
 
         public long VirusCount
         {
-            get 
+            get
             {
                 return _virus_file_count;
             }
@@ -271,7 +269,7 @@ namespace lame.dotnet.mt.scanner
 
         public long ElapsedMilliseconds
         {
-            get 
+            get
             {
                 return _elapse_time;
             }
@@ -279,30 +277,29 @@ namespace lame.dotnet.mt.scanner
     }
 
 
-    class Scanner 
+    internal class Scanner
     {
         private SFQueue _scan_obj_queue = new SFQueue();
         private DirTravelWorker _DirTravelWorker = null;
         private List<ScanWorker> _scanners = new List<ScanWorker>();
         private VirusLib _vlib = new VirusLib();
         private List<string> _params = null;
-        private long _elapse_time = 0;
 
-        public Scanner(List<string> param) 
+        public Scanner(List<string> param)
         {
             _params = param;
         }
 
 
-        public bool Load(int sc) 
+        public bool Load(int sc)
         {
             if (!_vlib.lame_open_vdb(null)) return false;
 
             _DirTravelWorker = new DirTravelWorker(_scan_obj_queue);
 
-            for (int i = 0; i < sc; i++)
+            for (var i = 0; i < sc; i++)
             {
-                ScanWorker s = new ScanWorker(_params, _scan_obj_queue);
+                var s = new ScanWorker(_params, _scan_obj_queue);
                 if (!s.Load(_vlib)) continue;
 
                 _scanners.Add(s);
@@ -318,11 +315,11 @@ namespace lame.dotnet.mt.scanner
 
             return true;
         }
-        public void run() 
+        public void run()
         {
             _DirTravelWorker.Run();
 
-            foreach (ScanWorker s in _scanners)
+            foreach (var s in _scanners)
             {
                 s.Run();
             }
@@ -333,11 +330,11 @@ namespace lame.dotnet.mt.scanner
             _DirTravelWorker.AppendScanPath(path);
         }
 
-        public void Wait() 
+        public void Wait()
         {
             _DirTravelWorker.Wait();
 
-            foreach (ScanWorker s in _scanners)
+            foreach (var s in _scanners)
             {
                 s.Wait();
             }
@@ -349,7 +346,7 @@ namespace lame.dotnet.mt.scanner
             long _total_virus = 0;
             long _elapse_minisecod = 0;
 
-            foreach (ScanWorker s in _scanners)
+            foreach (var s in _scanners)
             {
                 s.Unload();
 
@@ -368,18 +365,18 @@ namespace lame.dotnet.mt.scanner
 
 
             Console.WriteLine("");
-            Console.WriteLine("Virus/Files: " + _total_virus +  "/"+_total_files+ " = {0:0.0000}" +"%", _total_virus / (double)_total_files);
+            Console.WriteLine("Virus/Files: " + _total_virus + "/" + _total_files + " = {0:0.0000}" + "%", _total_virus / (double)_total_files);
 
-            long second = _elapse_minisecod / 1000;
-            long min = (second / 60) % 60;
-            long hour = second / 60 / 60;
+            var second = _elapse_minisecod / 1000;
+            var min = (second / 60) % 60;
+            var hour = second / 60 / 60;
 
             second = second % 60;
-            
+
             Console.WriteLine("Elapse: " + hour + ":" + min + ":" + second + "." + _elapse_minisecod % 1000);
 
 
-         
+
         }
     }
 }
