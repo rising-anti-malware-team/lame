@@ -442,11 +442,10 @@ namespace lame.dotnet.scanner
                 if (_Scanner != null) _Scanner.UnLoad();
 
                 if (vdb != null) vdb.lame_close_vdb();
-                }
             }
+        }
 
            
-        }
         private static void Help()
         {
             Console.WriteLine("Usage:\n");
