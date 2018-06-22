@@ -10,6 +10,7 @@
 		* [Python](#python)
 		* [dotNet](#dotnet)
 		* [Nodejs](#nodejs)
+		* [go](#go)
 	* [引擎优势](#引擎优势)
 		* [丰富全面的平台支持](#丰富全面的平台支持)
 		* [强劲的文件深度分析/提取/解码能力](#强劲的文件深度分析提取解码能力)
@@ -34,7 +35,7 @@
 - JAVA
 - Python(CPytohn)
 - dotNet
-- Nodejs(comming
+- Nodejs
 - go
 
 ### C/C++
@@ -48,11 +49,11 @@ EXTERN_C void*  lame_fork(void* lame);
 
 EXTERN_C long   lame_param_set(void* lame , const char*  param);
 EXTERN_C long   lame_init(void* lame);
-EXTERN_C long   lame_scan_file(void* lame , const char* fname , lame_scan_result* pResult) ;
+EXTERN_C long   lame_scan_file(void* lame , const char* fname , lame_scan_result* pResult);
 EXTERN_C long   lame_scan_mem(void* lame , uint8_t* data , uint32_t size , lame_scan_result* pResult);
 
 
-EXTERN_C long   lame_scan_file_with_callback(void* lame , const char* fname , lame_callback cb , void* user_data) ;
+EXTERN_C long   lame_scan_file_with_callback(void* lame , const char* fname , lame_callback cb , void* user_data);
 EXTERN_C long   lame_scan_mem_with_callback(void* lame , uint8_t* data , uint32_t size , lame_callback cb , void* user_data);
 
 EXTERN_C long   lame_get_version(lame_info* info);
@@ -81,7 +82,7 @@ public class Lame extends RavEngine {
 }
 ```
 ### Python
-``` python
+```python
 class Lame(LameBase):
 	def ScanFile(self,fname):
     	pass
@@ -293,14 +294,14 @@ upx (all targets，实验性质）
 7. 丰富的 文件格式识别能力
     - BOOT   ：  MBR引导扇区
     - MZ   ：  DOS可执行程序(exe)
-    - PE   ：  Windows可执行程序 
-    - DEX   ：  安卓应用主程序 
+    - PE   ：  Windows可执行程序
+    - DEX   ：  安卓应用主程序
     - ZIP   ：  ZIP压缩包
     - CAB   ：  Microsoft制订的压缩包格式
     - ARJ   ：  ARJ压缩包
     - RAR   ：  RAR压缩包
     - RAR5   ：  RAR 5.0 压缩包
-    - ARC   ：  ARC压缩包 
+    - ARC   ：  ARC压缩包
     - ZOO   ：  Unix系统中使用旧的压缩格式
     - LZH   ：  用LHARC压缩的文件
     - TAR   ：  UNIX合并文件
@@ -369,7 +370,7 @@ upx (all targets，实验性质）
     - WBM   ：  Macromedia Fireworks File
     - CAT   ：  Windows数字签名编录文件
     - MBX   ：  Microsoft Outlook保存电子邮件格式；Eudora邮箱
-    - WAV   ：  Windows波形声形 
+    - WAV   ：  Windows波形声形
     - WDL   ：  北京华康公司开发的一种电子读物文件格式
     - DBF   ：  dBASE文件
     - REALPLER   ：  RealPlayer媒体文件
@@ -392,7 +393,7 @@ upx (all targets，实验性质）
     - VMDK   ：  VMWare虚拟磁盘
     - RTF   ：  RTF文档
     - PST   ：  Outlook 2003 + 邮箱文件
-    - UCS16LE   ：  Unicode 16LE File 
+    - UCS16LE   ：  Unicode 16LE File
     - OUTLOOKEX_V5   Outlook Express 5 邮箱文件
     - OUTLOOKEX_V4   Outlook Express 4 邮箱文件
     - FOXMAIL_V3   Foxmail 3 邮箱文件
