@@ -499,25 +499,14 @@ static void ShowHelp()
 
 	printf("Example:");
 	printf("	  : lame.scanner d:\\samples");
-	printf("	  : lame.scanner -lame.v1 -hold d:\\samples");
+	printf("	  : lame.scanner -lame.v1 -hold d:\\samples\n");
 }
 
 
 
 int main(int argc, char* argv[])
 {
-	//LoadLibrary("crashmon.dll");
-	//_asm int 3
-
-	setlocale( LC_ALL, "" );
-	RSSetColor::SetConsoleColor(RSSetColor::green);
-	if (argc == 1) 
-	{
-		ShowHelp();
-		return -1;
-	}
-
-
+	int ret = -1;
 	bool bShowVersion = false;
 	bool bShowLicense = false;
 	bool bUseLameV1 = false;
@@ -526,11 +515,20 @@ int main(int argc, char* argv[])
 
 	std::vector<std::string> params;
 	std::vector<std::string> files;
+
+	IScanner* scanner = 0;
+
+	setlocale( LC_ALL, "" );
+	RSSetColor::SetConsoleColor(RSSetColor::green);
+
+	if (argc == 1) goto __exit__;
+
 	for (uint32_t i = 1 ; i < argc ; i++)
 	{
 		if (*argv[i] == '-')
 		{
-			if (stricmp(argv[i] , "-version") == 0){ bShowVersion = true;}
+			if (stricmp(argv[i] , "--help") == 0){ goto __exit__; }
+			else if (stricmp(argv[i] , "-version") == 0){ bShowVersion = true;}
 			else if (stricmp(argv[i] , "-license") == 0){ bShowLicense = true;}
 			else if (stricmp(argv[i] , "-lame.v1") == 0){ bUseLameV1 = true;}
 			else if (stricmp(argv[i] , "-hold") == 0){ bHoldon = true;}
@@ -549,8 +547,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-
-	IScanner* scanner = 0;
 	if (bUseLameV1)
 	{ 
 		scanner = new LameScannerV1();
@@ -562,20 +558,15 @@ int main(int argc, char* argv[])
 
 	if (!scanner)
 	{
-		printf("Faild to create lame scanner.");
-		ShowHelp();
-		return -1;
+		printf("Faild to create lame scanner.\n");
+		goto __exit__;
 	}
-
 
 	if (!scanner->Load())
 	{
-		printf("Faild to load lame scanner.");
-		ShowHelp();
-		delete scanner;
-		return -1;
+		printf("Faild to load lame scanner.\n");
+		goto __exit__;
 	}
-
 
 	//…Ë÷√≤Œ ˝
 	for (uint32_t i = 0 ; i < params.size() ;i++)
@@ -585,17 +576,14 @@ int main(int argc, char* argv[])
 
 	if (!scanner->Init())
 	{
-		printf("Faild to init lame scanner.");
-		ShowHelp();
-		delete scanner;
-		return -1;
+		printf("Faild to init lame scanner.\n");
+		goto __exit__;
 	}
 
 	if (bShowVersion)
 	{
 		scanner->ShowEngineInfo();
 	}
-
 
 	if (bShowLicense)
 	{
@@ -620,15 +608,15 @@ int main(int argc, char* argv[])
 		scanner->ShowStatistics();
 		printf("Elapse: %d:%d:%d(m:s:ms)\n", _minutes, _seconds, _mseconds );
 	}
+	ret = 0;
 
-
-
+__exit__:
+	if (-1 == ret) ShowHelp();
+	if (scanner) delete scanner; scanner = 0;
 	if (bHoldon)
 	{
 		getchar();
 	}
 
-
-	return 0;
+	return ret;
 }
-
