@@ -562,24 +562,6 @@ int main(int argc, char* argv[])
 		goto __exit__;
 	}
 
-	if (!scanner->Load())
-	{
-		printf("Faild to load lame scanner.\n");
-		goto __exit__;
-	}
-
-	//设置参数
-	for (uint32_t i = 0 ; i < params.size() ;i++)
-	{
-		scanner->SetParam(params[i].c_str());
-	}
-
-	if (!scanner->Init())
-	{
-		printf("Faild to init lame scanner.\n");
-		goto __exit__;
-	}
-
 	if (bShowVersion)
 	{
 		scanner->ShowEngineInfo();
@@ -592,6 +574,24 @@ int main(int argc, char* argv[])
 
 	if (files.size() > 0)
 	{
+		if (!scanner->Load())
+		{
+			printf("Faild to load lame scanner.\n");
+			goto __exit__;
+		}
+
+		//设置参数
+		for (uint32_t i = 0 ; i < params.size() ;i++)
+		{
+			scanner->SetParam(params[i].c_str());
+		}
+
+		if (!scanner->Init())
+		{
+			printf("Faild to init lame scanner.\n");
+			goto __exit__;
+		}
+
 		clock_t startTime = clock();
 		DTravel _DTravel(scanner , bShowFileList);
 		for (uint32_t i = 0 ; i < files.size() ; i++)
