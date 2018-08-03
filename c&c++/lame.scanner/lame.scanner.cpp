@@ -274,7 +274,7 @@ public:
 	{
 		if (!m_lame) return false;
 		if (LAME_FAILED(lame_init(m_lame))) return false;
-#if 1
+#if 0
 		//²âÊÔfork½Ó¿Ú
 		void* lame = lame_fork(m_lame);
 		lame_destroy(m_lame);
@@ -397,10 +397,10 @@ public:
 
 #ifdef _WIN32
 
-		DWORD dw = GetFileAttributes(lpdir);
-		if( dw == INVALID_FILE_ATTRIBUTES ) return ;
-		if( dw & FILE_ATTRIBUTE_REPARSE_POINT ) return ;
-		if( dw & FILE_ATTRIBUTE_DIRECTORY ) ScanDir(lpdir );
+		DWORD dwFileAttr = GetFileAttributes(lpdir);
+		if( dwFileAttr == INVALID_FILE_ATTRIBUTES ) return ;
+		if( dwFileAttr & FILE_ATTRIBUTE_REPARSE_POINT ) return ;
+		if( dwFileAttr & FILE_ATTRIBUTE_DIRECTORY ) ScanDir(lpdir );
 		else ScanFile(lpdir);
 #else
 
@@ -459,7 +459,7 @@ private:
 			filePath = lpdir;
 			filePath.append("/");
 			filePath.append(direntp->d_name);
-			ScanFile(filePath.c_str());
+			Scan(filePath.c_str());
 		}
 		closedir(dirp);
 		return ;
