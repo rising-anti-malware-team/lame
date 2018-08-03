@@ -191,7 +191,7 @@ public:
 		{
 			m_virus_count++;
 			RSSetColor::SetConsoleColor(RSSetColor::red);
-			printf("	Infected:%s\n", file , result.vname );
+			printf("	Infected:%s\n", result.vname );
 		}
 			
 		if( sdr ) rx_obj_release( sdr );
