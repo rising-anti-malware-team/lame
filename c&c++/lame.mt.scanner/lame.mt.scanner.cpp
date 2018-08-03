@@ -33,7 +33,7 @@ int main(int argc, const char* argv[])
 	}
 	
 	lame_scanner _scanner;
-	_scanner.scan(params , argv[1] , workers);
+	_scanner.scan(params , path_list , workers);
 
 	return 0;
 }

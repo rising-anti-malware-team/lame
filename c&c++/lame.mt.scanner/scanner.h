@@ -5,6 +5,7 @@
 #include <thread>
 
 #include "../../include/lame.v2.h"
+typedef std::vector<std::string> t_path_list;
 
 namespace RSSetColor
 {
@@ -162,7 +163,7 @@ void logger_scan_result(const char* msg , lame_scan_result* result)
 		RSSetColor::SetConsoleColor(RSSetColor::red);
 		printf("	Infected:%s (%s)" , result->vname , result->engid);
 	}
-	printf("%\n");
+	printf("\n");
 	
 }
 
@@ -171,24 +172,29 @@ class travel_dir_worker
 public:
 	travel_dir_worker(safe_file_queue& fq):m_fq(fq){}
 public:
-	void run(const char* path)
+	void run(t_path_list& path_list)
 	{
-		m_thread = std::thread(&travel_dir_worker::Scan ,this , path);
+		m_thread = std::thread( std::bind(&travel_dir_worker::Scan , this , path_list) );
 	}
 	void wait()
 	{
 		m_thread.join();
 	}
 private:
-	void Scan(const char* path)
+	void Scan(t_path_list& path_list)
 	{
-
+		for( size_t i = 0; i < path_list.size(); ++ i )
+		{
+			ScanMix( path_list[i].c_str() );
+		}
+	}
+	void ScanMix( const char* path )
+	{
 #ifdef WIN32
-
-		DWORD dw = GetFileAttributes(path);
-		if( dw == INVALID_FILE_ATTRIBUTES ) return ;
-		if( dw & FILE_ATTRIBUTE_REPARSE_POINT ) return ;
-		if( dw & FILE_ATTRIBUTE_DIRECTORY ) ScanDir(path );
+		DWORD dwFileAttr = GetFileAttributes(path);
+		if( dwFileAttr == INVALID_FILE_ATTRIBUTES ) return ;
+		if( dwFileAttr & FILE_ATTRIBUTE_REPARSE_POINT ) return ;
+		if( dwFileAttr & FILE_ATTRIBUTE_DIRECTORY ) ScanDir(path );
 		else {m_fq.push(path);}
 #else
 
@@ -246,7 +252,7 @@ private:
 			filePath = lpdir;
 			filePath.append("/");
 			filePath.append(direntp->d_name);
-			m_fq.push(filePath.c_str());
+			ScanMix(filePath.c_str());
 		}
 		closedir(dirp);
 		return ;
@@ -277,7 +283,7 @@ public:
 		}
 	}
 public:
-	bool run(void* vlib ,std::vector<std::string>& params  ,uint32_t workers)
+	bool run(void* vlib ,t_path_list& params  ,uint32_t workers)
 	{
 		if (!vlib) return false;
 
@@ -361,7 +367,7 @@ public:
 		clear();
 	}
 public:
-	void scan(std::vector<std::string>& params , const char* path , uint32_t workers)
+	void scan(t_path_list& params , t_path_list& path_list , uint32_t workers)
 	{
 		m_vlib = lame_open_vdb(0);
 		if (!m_vlib) return;
@@ -380,7 +386,7 @@ public:
 			return;
 		}
 
-		m_travel_worker->run(path);
+		m_travel_worker->run(path_list);
 		m_workers->run(m_vlib , params , workers);
 
 		m_travel_worker->wait();
