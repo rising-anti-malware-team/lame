@@ -512,6 +512,7 @@ int main(int argc, char* argv[])
 	bool bUseLameV1 = false;
 	bool bHoldon = false;
 	bool bShowFileList = false;
+	bool bScanFullDrivers = false;
 
 	std::vector<std::string> params;
 	std::vector<std::string> files;
@@ -535,6 +536,9 @@ int main(int argc, char* argv[])
 			else if (stricmp(argv[i] , "-show-file-list") == 0){ bShowFileList = true;}
 			else if (stricmp(argv[i] , "-xml") == 0){ bShowFileList = true;}
 			else if (stricmp(argv[i] , "-selicen") == 0){ bShowFileList = true;}
+#ifdef _WIN32
+			else if (stricmp(argv[i] , "-fullscan") == 0) { bScanFullDrivers = true;}
+#endif
 			else
 			{
 				if (strlen(argv[i]) == 1) continue;
@@ -571,6 +575,30 @@ int main(int argc, char* argv[])
 	{
 		scanner->ShowLicenseInfo();
 	}
+
+#ifdef _WIN32
+	if (bScanFullDrivers)
+	{
+		DWORD dwSize = GetLogicalDriveStrings( 0, NULL );
+		LPTSTR lpDriveStrings = (LPTSTR) HeapAlloc( GetProcessHeap(), 0, dwSize * sizeof(TCHAR) );
+		if( NULL != lpDriveStrings )
+		{
+			GetLogicalDriveStrings( dwSize, lpDriveStrings );
+			LPTSTR p = lpDriveStrings;
+			while( *p )
+			{
+				UINT uType = GetDriveType( p );
+				if( uType==DRIVE_FIXED || uType==DRIVE_REMOVABLE )
+				{
+					std::string tmp( p );
+					files.push_back(tmp);
+				}
+				p += 4;
+			}
+			HeapFree( GetProcessHeap(), 0, lpDriveStrings );
+		}
+	}
+#endif
 
 	if (files.size() > 0)
 	{

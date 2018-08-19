@@ -102,14 +102,9 @@ public:
 						_file_queue.push(v);
 						return true;
 					}
-					
 				}
-
 				std::this_thread::sleep_for(std::chrono::microseconds(100));
 			}
-			
-			
-			
 		}
 		else
 		{
@@ -121,7 +116,7 @@ public:
 		return true;
 	}
 
-    bool pop(std::string& v)
+	bool pop(std::string& v)
 	{
 		std::lock_guard<std::recursive_mutex> locker(_locker);
 		if (_file_queue.empty()) return false;
@@ -145,11 +140,9 @@ inline void mtprintf(const char* fmt , ...)
 	std::lock_guard<std::mutex> lock(g_printf_locker);
 
 	va_list ap; 
-
 	va_start(ap, fmt); 
 	int n = vprintf(fmt, ap); 
 	va_end(ap); 
-
 }
 
 void logger_scan_result(const char* msg , lame_scan_result* result)
@@ -164,22 +157,23 @@ void logger_scan_result(const char* msg , lame_scan_result* result)
 		printf("	Infected:%s (%s)" , result->vname , result->engid);
 	}
 	printf("\n");
-	
 }
 
-class travel_dir_worker
+
+class travel_dir
 {
 public:
-	travel_dir_worker(safe_file_queue& fq):m_fq(fq){}
+	travel_dir(){}
 public:
 	void run(t_path_list& path_list)
 	{
-		m_thread = std::thread( std::bind(&travel_dir_worker::Scan , this , path_list) );
+		m_thread = std::thread( std::bind(&travel_dir::Scan , this , path_list) );
 	}
 	void wait()
 	{
 		m_thread.join();
 	}
+	virtual void DoMeetFile( const char* path ) = 0;
 private:
 	void Scan(t_path_list& path_list)
 	{
@@ -195,20 +189,19 @@ private:
 		if( dwFileAttr == INVALID_FILE_ATTRIBUTES ) return ;
 		if( dwFileAttr & FILE_ATTRIBUTE_REPARSE_POINT ) return ;
 		if( dwFileAttr & FILE_ATTRIBUTE_DIRECTORY ) ScanDir(path );
-		else {m_fq.push(path);}
+		else DoMeetFile(path);
 #else
 
 		struct stat statInfo;
 		if(stat(path, &statInfo) != 0) return;
 		if(S_ISREG(statInfo.st_mode))
-			m_fq.push(path);
+			DoMeetFile(path);
 		else if(S_ISDIR(statInfo.st_mode))
 			ScanDir(path);
 #endif
 	}
 	void ScanDir(const char* lpdir)
 	{
-
 #ifdef _WIN32
 		HANDLE hFind;
 		WIN32_FIND_DATA wfData;
@@ -233,12 +226,11 @@ private:
 			strDir.append(wfData.cFileName);
 
 			if(wfData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ScanDir(strDir.c_str());
-			else  {m_fq.push(strDir);}
+			else DoMeetFile(strDir.c_str());
 
 		}while(FindNextFile(hFind,&wfData));
 
 		FindClose(hFind);
-
 #else
 
 		DIR *dirp;  
@@ -256,14 +248,38 @@ private:
 		}
 		closedir(dirp);
 		return ;
-
-
 #endif
+	}
+private:
+	std::thread m_thread;
+};
 
+class travel_dir_worker : public travel_dir
+{
+public:
+	travel_dir_worker(safe_file_queue& fq):m_fq(fq){}
+public:
+	void DoMeetFile( const char* path )
+	{
+		m_fq.push(path);
 	}
 private:
 	safe_file_queue& m_fq;
-	std::thread m_thread;
+};
+
+class travel_dir_counter : public travel_dir
+{
+public:
+	travel_dir_counter(uint64_t& cnt):m_filecnt(cnt){}
+public:
+	void DoMeetFile( const char* path )
+	{
+		std::lock_guard<std::recursive_mutex> locker(_locker);
+		m_filecnt++;
+	}
+private:
+	std::recursive_mutex _locker;
+	uint64_t& m_filecnt;
 };
 
 
@@ -271,7 +287,7 @@ class scan_workers
 {
 
 public:
-	scan_workers(safe_file_queue& fq):m_fq(fq)
+	scan_workers(safe_file_queue& fq, uint64_t& filecnt):m_fq(fq),m_filecnt(filecnt),m_curfilecnt(0)
 	{
 
 	}
@@ -289,11 +305,9 @@ public:
 
 		m_lames.resize(workers);
 		m_workers.resize(workers);
-		
 
 		for (uint32_t idx = 0 ; idx < workers ; idx++)
-		{
-			
+		{	
 			void* lame = lame_create(vlib);
 			if (!lame) return false;
 
@@ -310,8 +324,7 @@ public:
 
 			m_lames[idx] = lame;
 			m_workers[idx] = std::thread(&scan_workers::scan ,this ,lame);
-
-		}
+ 		}
 		
 		return true;
 	}
@@ -344,13 +357,28 @@ private:
 
 			lame_scan_result result;
 			long l = lame_scan_file(lame , path.c_str() , &result);
-			logger_scan_result(path.c_str() , l == 0 ? &result : 0);
+			//logger_scan_result(path.c_str() , l == 0 ? &result : 0);
+			{
+				std::lock_guard<std::recursive_mutex> locker(_locker);
+				m_curfilecnt++;
+				RSSetColor::SetConsoleColor(RSSetColor::green);
+				printf("[%lld/%lld] %s", m_curfilecnt, m_filecnt, path.c_str());
+				if(l == 0)
+				{
+					RSSetColor::SetConsoleColor(RSSetColor::red);
+					printf("	Infected:%s (%s)" , result.vname , result.engid);
+				}
+				printf("\n");
+			}
 		}
 	}
 private:
 	safe_file_queue& m_fq;
 	std::vector<std::thread> m_workers;
 	std::vector<void*> m_lames;
+	std::recursive_mutex _locker;
+	uint64_t& m_filecnt;
+	uint64_t m_curfilecnt;
 };
 
 
@@ -360,7 +388,9 @@ class lame_scanner
 public:
 	lame_scanner():m_vlib(0),
 				   m_workers(0),
-				   m_travel_worker(0)
+				   m_travel_worker(0),
+				   m_filecnt(0),
+				   m_travel_counter(0)
 	{}
 	~lame_scanner()
 	{
@@ -371,24 +401,22 @@ public:
 	{
 		m_vlib = lame_open_vdb(0);
 		if (!m_vlib) return;
-		
-		m_workers = new scan_workers(m_file_queue);
-		if (!m_workers)
-		{
-			clear();
-			return;
-		}
 
+		m_workers = new scan_workers(m_file_queue, m_filecnt);
 		m_travel_worker = new travel_dir_worker(m_file_queue);
-		if (!m_travel_worker) 
+		m_travel_counter = new travel_dir_counter(m_filecnt);
+		
+		if (!m_workers || !m_travel_worker || !m_travel_counter)
 		{
 			clear();
 			return;
 		}
 
+		m_travel_counter->run(path_list);
 		m_travel_worker->run(path_list);
 		m_workers->run(m_vlib , params , workers);
 
+		m_travel_counter->wait();
 		m_travel_worker->wait();
 		m_file_queue.push("exit");
 		m_workers->wait();
@@ -408,6 +436,12 @@ public:
 			m_travel_worker = 0;
 		}
 
+		if (m_travel_counter)
+		{
+			delete m_travel_counter;
+			m_travel_counter = 0;
+		}
+
 		if (m_vlib)
 		{
 			lame_close_vdb(m_vlib);
@@ -418,7 +452,9 @@ private:
 	void* m_vlib;
 	scan_workers* m_workers;
 	travel_dir_worker* m_travel_worker;
+	travel_dir_counter* m_travel_counter;
 	safe_file_queue m_file_queue;
+	uint64_t m_filecnt;
 };
 
 #endif
