@@ -216,7 +216,7 @@ public:
 	}
 	void ShowStatistics()
 	{
-		printf("Files: %I64d / %I64d = %f\n",m_virus_count ,m_file_count , m_virus_count == 0 ? 0:(double)(m_virus_count)/m_file_count);
+		printf("Files: %lld / %lld = %.2f\n",m_virus_count ,m_file_count , m_virus_count == 0 ? 0:(double)(m_virus_count)/m_file_count);
 	}
 	void UnInit()
 	{
@@ -340,7 +340,7 @@ public:
 	}
 	void ShowStatistics()
 	{
-		 printf("Files: %I64d / %I64d = %f\n",m_virus_count ,m_file_count , m_virus_count == 0 ? 0:(double)(m_virus_count)/m_file_count);
+		 printf("Files: %lld / %lld = %.2f\n",m_virus_count ,m_file_count , m_virus_count == 0 ? 0:(double)(m_virus_count)/m_file_count);
 	}
 	void UnInit()
 	{
@@ -493,13 +493,13 @@ static void ShowHelp()
 	printf("Usage:\n");
 	printf("	  -version			: show scanner info.\n");
 	printf("	  -license			: show scanner license.\n");
-	printf("	  -lame.v1			: use  scanner of V1 to scan,default V2\n");
+	printf("	  -lame.v1			: use  scanner of V1 to scan,default V2.\n");
 	printf("	  -hold				: hold , press return to exit.\n");
-	printf("	  -show-file-list	: show internal files of scan.\n\n\n");
+	printf("	  -show-file-list	: show internal files of scan.\n\n");
 
-	printf("Example:");
-	printf("	  : lame.scanner d:\\samples");
-	printf("	  : lame.scanner -lame.v1 -hold d:\\samples\n");
+	printf("Example:\n");
+	printf("	  lame.scanner d:\\samples\n");
+	printf("	  lame.scanner -lame.v1 -hold d:\\samples\n\n");
 }
 
 

@@ -2,100 +2,104 @@
 import sys
 from lame import *
 
-LAME_PATH = "E:\\work\\svn\\rame\\build\\release"
+def format_bstring(bstr, CodePage=None):
+    if 3 == sys.version_info.major:
+        if CodePage is None:
+            return bstr.decode()
+        else:
+            return bstr.decode(CodePage)
+    else:
+        return bstr
 
-
-def PrintLameScanResult(fname , result):
+def PrintLameScanResult(fname, result):
     sys.stdout.write(fname)
     if result is not None:
-        sys.stdout.write(" " + "  Infected: " + result.vname + " (" + result.engid+")")
-    
+        sys.stdout.write(" " + "  Infected: " + format_bstring(result.vname) + " (" + format_bstring(result.engid) + ")")
     sys.stdout.write("\n")
-     
-def lame_test(dbf , path):
 
-    _lame = Lame(LAME_PATH)
-
-
-    #_lame.SetParam("kill")
-    
-    if not _lame.Load(dbf):
-        return
-
+def print_lame_licence_info(_lame):
     _license = _lame.GetLicense()
     if _license is not None:
         print("License:")
-        print("     Version: " + _license.version)
-        print("     Owner  : " + _license.Owner)
-        print("     Date   : " + _license.Data)
-        print("     Authm  : " + _license.Authm)
+        print("     Version: " + format_bstring(_license.Version))
+        print("     Owner  : " + format_bstring(_license.Owner,'gb2312'))
+        print("     Date   : " + format_bstring(_license.Date))
+        print("     Authm  : " + format_bstring(_license.Authm))
+        print("     Data  :  " + format_bstring(_license.Data) + "\n")
+    return
 
-
+def print_lame_version_info(_lame):
     _version = _lame.GetVersion()
-    if _version is not None: 
-        print("Engine Version    :" + _version.engv)
-        print("Viruse Lib Version: " + _version.vdbv)
+    if _version is not None:
+        print("Engine Version    : " + format_bstring(_version.engv))
+        print("Viruse Lib Version: " + format_bstring(_version.vdbv) + "\n")
+    return
 
-    if os.path.isfile(path) :
-        _result = _lame.ScanFile(path)
-        PrintLameScanResult(path  , _result)
+def lame_test(dbf, lame_path, scan_path):
+    _lame = Lame(lame_path)
+    #_lame.SetParam("kill")
+
+    if not _lame.Load(dbf):
+        sys.stdout.write("load viruslib failed.")
+        return
+
+    print_lame_licence_info(_lame)
+    print_lame_version_info(_lame)
+
+    if os.path.isfile(scan_path) :
+        _result = _lame.ScanFile(scan_path)
+        PrintLameScanResult(scan_path, _result)
     else:
-        for dirpath,dirnames,filenames in os.walk(path):
+        for dirpath,dirnames,filenames in os.walk(scan_path):
             for file in filenames:
                 fullpath=os.path.join(dirpath,file)
                 _result = _lame.ScanFile(fullpath)
-                PrintLameScanResult(fullpath  , _result)
-
-
-
+                PrintLameScanResult(fullpath, _result)
     _lame.Unload()
+    return
 
-def LameCallBack(fname , result):
-    sys.stdout.write(fname)
-    if result is not None:
-        sys.stdout.write(" " + "  Infected: " + result.vname + " (" + result.engid+")")
-    
+def enter_file(fname, depth, _lame):
+    return LameWithFeedback.LSCT_CONTINUE
+
+def leave_file(fname, depth, _lame, l):
+    sys.stdout.write(format_bstring(fname))
+    if _lame._virus_name is not None:
+        sys.stdout.write(" " + "  Infected: " + format_bstring(_lame._virus_name))
     sys.stdout.write("\n")
+    return
 
-def lame_with_feedback_test(dbf , path):
+def alarm(fname, result, _lame):
+    if result is not None:
+        _lame._virus_name = result.vname
+    return LameWithFeedback.LSCT_CONTINUE
 
+def lame_with_feedback_test(dbf, lame_path, scan_path):
     if dbf is None:
         return
 
-    _lame = LameWithFeedback(LAME_PATH)
-    _lame.SetCallack(LameCallBack)
+    _lame = LameWithFeedback(lame_path)
+    _lame.SetCallack(enter_file, leave_file, alarm)
 
     #_lame.SetParam("kill")
 
     if not _lame.Load(dbf):
         return
 
-    _license = _lame.GetLicense()
-    if _license is not None:
-        print("License:")
-        print("     Version: " + _license.version)
-        print("     Owner  : " + _license.Owner)
-        print("     Date   : " + _license.Data)
-        print("     Authm  : " + _license.Authm)
+    print_lame_licence_info(_lame)
+    print_lame_version_info(_lame)
 
-
-    _version = _lame.GetVersion()
-    if _version is not None: 
-        print("Engine Version    :" + _version.engv)
-        print("Viruse Lib Version: " + _version.vdbv)
-
-    if os.path.isfile(path) :
-        _lame.ScanFile(path)
+    if os.path.isfile(scan_path) :
+        _lame.ScanFile(scan_path)
     else:
-        for dirpath,dirnames,filenames in os.walk(path):
+        for dirpath,dirnames,filenames in os.walk(scan_path):
             for file in filenames:
                 fullpath=os.path.join(dirpath,file)
                 _lame.ScanFile(fullpath)
+    _lame.Unload()
+    return
 
-    _lame.Unload()   
-    
-def test(path):
 
+def main(path):
     if path is None:
         return
 
@@ -103,25 +107,37 @@ def test(path):
     if _scan_path_count == 0:
         return
 
-    _dbf = VirusDb(LAME_PATH)
+    print('\n---- test start ----\n')
+
+    lame_path = path[0]
+    scan_path = path[1]
+
+    _dbf = VirusDb(lame_path)
     if not _dbf.OpenVdb(None):
-        print("Faild to openvdb.")
+        print('Faild to openvdb.')
         return
 
+    print('\n---- normal sample ----\n')
+    lame_test(_dbf, lame_path, scan_path)
 
-    lame_test(_dbf , path[0])
-    lame_with_feedback_test(_dbf , path[0])
+    print('\n---- callback sample ----\n')
+    lame_with_feedback_test(_dbf, lame_path, scan_path)
 
     _dbf.CloseVdb()
 
+    print('\n---- test end ----\n')
+    return
 
 
-def exit(signum, frame):  
-    sys.exit()  
+
+def exit(signum, frame):
+    sys.exit()
+
+# sys.argv.append('D:\\svn\\trunk\\sdk\\publish\\python')
+# sys.argv.append('d:\\rsdata\\1\\11')
 
 if  __name__ == "__main__":
-    signal.signal(signal.SIGINT, exit)  
+    signal.signal(signal.SIGINT, exit)
     signal.signal(signal.SIGTERM, exit)
-    test(sys.argv[1:])
-    
+    main(sys.argv[1:])
 

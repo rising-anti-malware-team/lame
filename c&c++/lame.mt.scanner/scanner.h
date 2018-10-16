@@ -164,6 +164,7 @@ class travel_dir
 {
 public:
 	travel_dir(){}
+	virtual ~travel_dir(){}
 public:
 	void run(t_path_list& path_list)
 	{
