@@ -37,7 +37,7 @@ def print_lame_version_info(_lame):
 
 def lame_test(dbf, lame_path, scan_path):
     _lame = Lame(lame_path)
-    #_lame.SetParam("kill")
+    # _lame.SetParam("kill")
 
     if not _lame.Load(dbf):
         sys.stdout.write("load viruslib failed.")
@@ -59,12 +59,14 @@ def lame_test(dbf, lame_path, scan_path):
     return
 
 def enter_file(fname, depth, _lame):
+    _lame._virus_name = None
     return LameWithFeedback.LSCT_CONTINUE
 
 def leave_file(fname, depth, _lame, l):
     sys.stdout.write(format_bstring(fname))
     if _lame._virus_name is not None:
         sys.stdout.write(" " + "  Infected: " + format_bstring(_lame._virus_name))
+        _lame._virus_name = None
     sys.stdout.write("\n")
     return
 
@@ -133,8 +135,8 @@ def main(path):
 def exit(signum, frame):
     sys.exit()
 
-# sys.argv.append('D:\\svn\\trunk\\sdk\\publish\\python')
-# sys.argv.append('d:\\rsdata\\1\\11')
+# sys.argv.append('D:\\MyJob\\SDK\\produce\\make\\lame-win-x64')
+# sys.argv.append('D:\\rsdata\\1\\11')
 
 if  __name__ == "__main__":
     signal.signal(signal.SIGINT, exit)

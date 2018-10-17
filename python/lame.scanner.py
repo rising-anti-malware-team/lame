@@ -255,8 +255,8 @@ def main(lame_path, argv):
     _dbf.CloseVdb()
     return
 
-# sys.argv.append('D:\\svn\\trunk\\sdk\\publish\\python')
-# sys.argv.append('d:\\rsdata\\1\\11')
+# sys.argv.append('D:\\MyJob\\SDK\\produce\\make\\lame-win-x64')
+# sys.argv.append('D:\\rsdata\\1\\11')
 
 if  __name__ == "__main__":
     signal.signal(signal.SIGINT, exit)

@@ -108,7 +108,18 @@ class LameBase:
         self._params.append(param)
 
         if self._lame_engine_handle is not None:
-            self._lame_dll_handle.lame_param_set(self._lame_engine_handle, param)
+            self.SetParameter(param)
+
+        return
+
+
+    def SetParameter(self, param):
+        if 3 == sys.version_info.major:
+            p = param.encode('gbk')
+        else:
+            p = param
+        return self._lame_dll_handle.lame_param_set(self._lame_engine_handle, p)
+
 
     def Load(self, vdb_object):
         self._vbd_handle = vdb_object.GetVbdHandle()
@@ -120,7 +131,7 @@ class LameBase:
             return False
 
         for p in self._params:
-            self._lame_dll_handle.lame_param_set(self._lame_engine_handle, p)
+            self.SetParameter(p)
 
         ret = self._lame_dll_handle.lame_init(self._lame_engine_handle)
 
