@@ -37,7 +37,7 @@ def print_lame_version_info(_lame):
 
 def lame_test(dbf, lame_path, scan_path):
     _lame = Lame(lame_path)
-    # _lame.SetParam("kill")
+    #_lame.SetParam("kill")
 
     if not _lame.Load(dbf):
         sys.stdout.write("load viruslib failed.")
@@ -62,7 +62,7 @@ def enter_file(fname, depth, _lame):
     _lame._virus_name = None
     return LameWithFeedback.LSCT_CONTINUE
 
-def leave_file(fname, depth, _lame, l):
+def leave_file(fname, depth, l, _lame):
     sys.stdout.write(format_bstring(fname))
     if _lame._virus_name is not None:
         sys.stdout.write(" " + "  Infected: " + format_bstring(_lame._virus_name))

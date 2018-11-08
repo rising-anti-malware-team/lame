@@ -3,7 +3,6 @@ import sys
 from ctypes import *
 import platform
 import signal
-import ccolor
 
 
 class LameScanResult(Structure):
@@ -252,7 +251,7 @@ def LameScanEnterFile(fname, depth, userdata):
 LAMESCANLEAVEFILE = WINFUNCTYPE(None, c_char_p, c_int, c_void_p, c_int)
 def LameScannerLeaveFile(fname, depth, userdata, l):
     _lame = cast(userdata, py_object).value
-    _lame.LeaveFile(fname, depth, _lame, l)
+    _lame.LeaveFile(fname, depth, l, _lame)
 
 LAMESCANALARM = WINFUNCTYPE(None, c_char_p, POINTER(LameScanResult), c_void_p)
 def LameScannerAlarm(fname, result, userdata):

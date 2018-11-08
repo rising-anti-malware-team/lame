@@ -40,7 +40,6 @@ namespace lame.dotnetcore.mt.scanner
                 }
             }
 
-
             var _scanner = new Scanner(_params);
             if (!_scanner.Load(_workers)) return;
 
@@ -49,7 +48,6 @@ namespace lame.dotnetcore.mt.scanner
             {
                 _scanner.AppendScanPath(s);
             }
-
 
             _scanner.run();
             _scanner.Wait();

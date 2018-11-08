@@ -79,9 +79,11 @@ class LameScanner:
             return
         if self._lame is None:
             return
+        self._color.set_green_text()
         sys.stdout.write(fname)
         _result = self._lame.ScanFile(fname)
         if _result is not None:
+            self._color.set_red_text()
             sys.stdout.write(" " + "  Infected: " + format_bstring(_result.vname) + " (" + format_bstring(_result.engid) + ")")
         sys.stdout.write("\n")
         return
@@ -149,25 +151,27 @@ class LameScanner2:
         print("Viruse Lib Version: " + format_bstring(_version.vdbv))
         return
 
-    def __EnterFile(self, fname, depth):
+    def __EnterFile(self, fname, depth, udata):
         self._virus_info_list.append([fname, ""])
         return LameWithFeedback.LSCT_CONTINUE
 
-    def __LeaveFile(self, fname, depth):
+    def __LeaveFile(self, fname, depth, l, udata):
         if self._virus_info_list.count == 0:
             return
         vinfo = self._virus_info_list[len(self._virus_info_list) - 1]
         self._virus_info_list.remove(vinfo)
-        sys.stdout.write(vinfo[0])
+        self._color.set_green_text()
+        sys.stdout.write(format_bstring(vinfo[0]))
         if len(vinfo[1]) != 0:
+            self._color.set_red_text()
             sys.stdout.write(" " + "  Infected: " + vinfo[1])
         sys.stdout.write("\n")
         return
 
-    def __Alarm(self, fname, result):
+    def __Alarm(self, fname, result, udata):
         if result is None:
             return LameWithFeedback.LSCT_CONTINUE
-        self._virus_info_list[len(self._virus_info_list) - 1][1] = result.vname + " (" + result.engid+")"
+        self._virus_info_list[len(self._virus_info_list) - 1][1] = format_bstring(result.vname) + " (" + format_bstring(result.engid) + ")"
         return LameWithFeedback.LSCT_CONTINUE
 
     def Scan(self, path_):
@@ -257,6 +261,7 @@ def main(lame_path, argv):
 
 # sys.argv.append('D:\\MyJob\\SDK\\produce\\make\\lame-win-x64')
 # sys.argv.append('D:\\rsdata\\1\\11')
+# sys.argv.append('-show-file-list')
 
 if  __name__ == "__main__":
     signal.signal(signal.SIGINT, exit)

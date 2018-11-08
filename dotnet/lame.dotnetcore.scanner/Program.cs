@@ -93,7 +93,7 @@ namespace lame.dotnetcore.scanner
         {
             if (lame == null) return null;
 
-            return new Scanner((Lame) lame.Clone(), vdb);
+            return new Scanner((Lame)lame.Clone(), vdb);
         }
 
         public void ShowVersion()
@@ -222,7 +222,7 @@ namespace lame.dotnetcore.scanner
         {
             if (lame == null) return null;
 
-            return new ScannerEx((LameWithEvent) lame.Clone(), vdb);
+            return new ScannerEx((LameWithEvent)lame.Clone(), vdb);
         }
 
         public void Scan(string path)

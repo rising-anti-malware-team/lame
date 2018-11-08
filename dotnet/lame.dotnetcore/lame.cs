@@ -407,7 +407,7 @@ namespace lame.dotnetcore
                 if (pEngine == IntPtr.Zero) throw new Exception("Invalid lame");
 
                 var _result = new ScanResult_();
-                if (LameUtity.lame_scan_mem_(pEngine, bytes, (uint) bytes.Length, ref _result) < 0) return null;
+                if (LameUtity.lame_scan_mem_(pEngine, bytes, (uint)bytes.Length, ref _result) < 0) return null;
 
                 var result = new LameScanResult();
 
@@ -506,7 +506,7 @@ namespace lame.dotnetcore
                 if (bytes == null || bytes.Length == 0) throw new Exception("Invalid param");
                 if (pEngine == IntPtr.Zero) throw new Exception("Invalid lame");
 
-                if (LameUtity.lame_scan_mem_with_callback_(pEngine, bytes, (uint) bytes.Length, ref cbs, IntPtr.Zero) <
+                if (LameUtity.lame_scan_mem_with_callback_(pEngine, bytes, (uint)bytes.Length, ref cbs, IntPtr.Zero) <
                     0) return;
             }
             catch (Exception e)
@@ -550,8 +550,7 @@ namespace lame.dotnetcore
         {
             try
             {
-                var _result = (ScanResult_) Marshal.PtrToStructure(resp, typeof(ScanResult_));
-
+                var _result = (ScanResult_)Marshal.PtrToStructure(resp, typeof(ScanResult_));
 
                 var result = new LameScanResult();
                 result.EngineID = _result.engid;
@@ -575,7 +574,7 @@ namespace lame.dotnetcore
 
         private int LameScanEnterFile(string fname, uint depth, IntPtr uuserdata)
         {
-            return (int) EnterFileEvent(fname, depth);
+            return (int)EnterFileEvent(fname, depth);
         }
 
         private void LameScanLeaveFile(string fname, uint depth, IntPtr uuserdata, int l)
@@ -588,8 +587,8 @@ namespace lame.dotnetcore
             LameScanResult result = null;
 
             if (resp != IntPtr.Zero) { result = FetchResult(resp); }
-            if (result == null) return (int) LSCT.CONTINUE;
-            return (int) AlarmEvent(fname, result);
+            if (result == null) return (int)LSCT.CONTINUE;
+            return (int)AlarmEvent(fname, result);
         }
     }
 
@@ -684,7 +683,7 @@ namespace lame.dotnetcore
             {
                 try
                 {
-                    return LameUtity.lame_file_read_(_handle, bytes, (uint) bytes.Length);
+                    return LameUtity.lame_file_read_(_handle, bytes, (uint)bytes.Length);
                 }
                 catch (Exception)
                 {
@@ -710,7 +709,7 @@ namespace lame.dotnetcore
             {
                 try
                 {
-                    return LameUtity.lame_file_seek_(_handle, offset, (int) orginal);
+                    return LameUtity.lame_file_seek_(_handle, offset, (int)orginal);
                 }
                 catch (Exception)
                 {
@@ -755,14 +754,14 @@ namespace lame.dotnetcore
             try
             {
                 var _file = new LameFile(fname, fmt, depth, GetPackFlage(flag), handle);
-                if (_file == null) return (int) LCT.Continue;
-                return (int) OnExtractEnterFileEvent(_file);
+                if (_file == null) return (int)LCT.Continue;
+                return (int)OnExtractEnterFileEvent(_file);
             }
             catch (Exception)
             {
             }
 
-            return (int) LCT.Continue;
+            return (int)LCT.Continue;
         }
 
         private void ExtractLeaveFileHandle(string fname, string fmt, uint depth, ulong flag, IntPtr handle,

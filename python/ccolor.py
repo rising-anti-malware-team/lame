@@ -1,5 +1,6 @@
 import ctypes
 import platform
+import sys
 
 
 STD_INPUT_HANDLE = -10
@@ -27,25 +28,20 @@ class ConsoleColor_windows:
             handle = self.std_out_handle
         return ctypes.windll.kernel32.SetConsoleTextAttribute(handle, color)
 
-    def print_default_color(self, text):
+    def reset_color(self):
         self.set_cmd_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE)
-        print(text)
 
-    def print_red_text(self, text):
+    def set_red_text(self):
         self.set_cmd_color(FOREGROUND_RED | FOREGROUND_INTENSITY)
-        print(text)
 
-    def print_green_text(self, text):
+    def set_green_text(self):
         self.set_cmd_color(FOREGROUND_GREEN | FOREGROUND_INTENSITY)
-        print(text)
 
-    def print_blue_text(self, text): 
+    def set_blue_text(self): 
         self.set_cmd_color(FOREGROUND_BLUE | FOREGROUND_INTENSITY)
-        print(text)
 
-    def print_red_text_with_blue_bg(self, text):
+    def set_red_text_with_blue_bg(self):
         self.set_cmd_color(FOREGROUND_RED | FOREGROUND_INTENSITY| BACKGROUND_BLUE | BACKGROUND_INTENSITY)
-        print(text)
 
 
 
@@ -75,33 +71,27 @@ class ConsoleColor_windows:
 '''
 class ConsoleColor_linux:
 
-    def set_cmd_color(self, text, color=None, on_color=None, attrs=None):
-        fmt_str = '\x1B[;%dm%s\x1B[0m'
-        if color is not None:
-            text = fmt_str % (color, text)
+    def set_cmd_color(self, color=None, on_color=None):
+        if color is not None and on_color is not None:
+            sys.stdout.write('\033[1;%d;%dm' % (color, on_color))
+        if color == 0:
+            sys.stdout.write('\033[0m')
+        return
 
-        if on_color is not None:
-            text = fmt_str % (on_color, text)
+    def reset_color(self):
+        self.set_cmd_color(0)
 
-        if attrs is not None:
-            for attr in attrs:
-                text = fmt_str % (color, text)
-        return text
+    def set_red_text(self):
+        self.set_cmd_color(31, 40)
 
-    def print_default_color(self, text):
-        print(self.set_cmd_color(text, 0))
+    def set_green_text(self):
+        self.set_cmd_color(32, 40)
 
-    def print_red_text(self, text):
-        print(self.set_cmd_color(text, 31))
+    def set_blue_text(self):
+        self.set_cmd_color(34, 40)
 
-    def print_green_text(self, text):
-        print(self.set_cmd_color(text, 32))
-
-    def print_blue_text(self, text):
-        print(self.set_cmd_color(text, 34))
-
-    def print_red_text_with_blue_bg(self, text):
-        print(self.set_cmd_color(text, 34, 44))
+    def set_red_text_with_blue_bg(self):
+        self.set_cmd_color(34, 44)
 
 
 class ConsoleColor:
@@ -113,35 +103,36 @@ class ConsoleColor:
             self.color = ConsoleColor_linux()
 
     def set_cmd_color(self, *args):
-        if platform.system() == "Windows":
-            self.color.set_cmd_color(args[0], args[1])
-        else:
-            self.color.set_cmd_color(args[0], args[1], args[2], args[3])
+        self.color.set_cmd_color(args[0], args[1])
         return
 
-    def print_default_color(self, text):
-        self.color.print_default_color(text)
+    def reset_color(self):
+        self.color.reset_color()
         return
 
-    def print_red_text(self, text):
-        self.color.print_red_text(text)
+    def set_red_text(self):
+        self.color.set_red_text()
         return
 
-    def print_green_text(self, text):
-        self.color.print_green_text(text)
+    def set_green_text(self):
+        self.color.set_green_text()
         return
 
-    def print_blue_text(self, text): 
-        self.color.print_blue_text(text)
+    def set_blue_text(self): 
+        self.color.set_blue_text()
         return
 
-    def print_red_text_with_blue_bg(self, text):
-        self.color.print_red_text_with_blue_bg(text)
+    def set_red_text_with_blue_bg(self):
+        self.color.set_red_text_with_blue_bg()
         return
 
 
 
 if __name__ == "__main__":
     _c = ConsoleColor()
-    _c.print_blue_text('blue')
-    _c.print_default_color('default')
+    _c.set_blue_text()
+    print('blue')
+    _c.set_red_text()
+    print('red')
+    _c.reset_color()
+    print('default')

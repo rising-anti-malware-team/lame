@@ -322,7 +322,7 @@ namespace lame.dotnetcore.mt.scanner
 
             Console.WriteLine("");
             Console.WriteLine("Virus/Files: " + _total_virus + "/" + _total_files + " = {0:0.0000}" + "%",
-                _total_virus / (double) _total_files);
+                _total_virus / (double)_total_files);
 
             var second = _elapse_minisecod / 1000;
             var min = second / 60 % 60;
