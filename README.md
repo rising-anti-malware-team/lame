@@ -83,18 +83,24 @@ public class Lame extends RavEngine {
 ```
 ### Python
 ```python
+class LameBase:
+	def SetParam(self, param)
+	def SetParameter(self, param)
+	def Load(self, vdb_object)
+	def GetVersion(self)
+	def GetLicense(self)
+	def Unload(self)
+
 class Lame(LameBase):
-	def ScanFile(self,fname):
-    	pass
-	def ScanMem(self, data):
-    	pass
-	def Clone(self):
-    	pass
-class LameWithFeedback:
-	def SetCallack(self,cb):
-        self._callback = cb
-    ...
-  
+	def ScanFile(self,fname)
+	def ScanMem(self, data)
+	def Clone(self)
+
+class LameWithFeedback(LameBase):
+	def SetCallack(self, enter_file, leave_file, alram)
+	def ScanFile(self, fname)
+	def ScanMem(self, data)
+	def Clone(self)
 ```
 ### dotNet
 ```c
