@@ -11,6 +11,7 @@
 		* [dotNet](#dotnet)
 		* [Nodejs](#nodejs)
 		* [go](#go)
+		* [php](#php)
 	* [引擎优势](#引擎优势)
 		* [丰富全面的平台支持](#丰富全面的平台支持)
 		* [强劲的文件深度分析/提取/解码能力](#强劲的文件深度分析提取解码能力)
@@ -37,6 +38,7 @@
 - dotNet
 - Nodejs
 - go
+- php
 
 ### C/C++
 ```c
@@ -171,6 +173,31 @@ func (this *Lame) Extract_GetSize(handle uintptr) int
 func (this *Lame) Extract_Seek(handle uintptr, offset int, method int32) bool
 func (this *Lame) Extract_Tell(handle uintptr) int32
 func (this *Lame) Extract_Read(handle uintptr, buf [] byte, size uint32) uint32
+```
+
+### php
+```php
+class Lame
+{
+	function open_vdb($vlib_path = "");
+	function create();
+	function release(&$handle);
+	function close_vdb(&$vdb);
+	function set_parameter($param);
+	function load();
+	function unload();
+	function scan($filename);
+	function scan_with_callback($filename, $enter_file, $leave_file, $alarm, &$user_data);
+	function scan_memory($contents);
+	function scan_memory_with_callback($contents, $enter_file, $leave_file, $alarm, &$user_data);
+	function extract_file($filename, $enter_file, $leave_file, &$user_data);
+	function extract_get_size($handle);
+	function extract_seek($handle, $offset, $method);
+	function extract_tell($handle);
+	function extract_read($handle, $size);
+	function get_version();
+	function get_licence_info();
+}
 ```
 
 ---

@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("plame", "for plame support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("plame", "enable plame support", "no");
+
+if (PHP_PLAME != "no") {
+	EXTENSION("plame", "plame.c");
+}
+
